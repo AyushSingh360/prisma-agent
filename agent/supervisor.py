@@ -1,10 +1,10 @@
 import json
 import concurrent.futures
 from langgraph.graph import StateGraph, START, END
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-from config import NVIDIA_API_KEY, NVIDIA_BASE_URL, SUPERVISOR_MODEL, SUB_AGENT_MODEL
+from config import NVIDIA_API_KEY, NVIDIA_BASE_URL, SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
 from .state import AgentState, SubTask
 from .sub_agents.coder import create_coder
 from .sub_agents.debugger import create_debugger
