@@ -10,7 +10,7 @@ console = Console()
 
 def print_welcome():
     panel = Panel.fit(
-        "[bold cyan]Coding Agent[/bold cyan]\n"
+        "[bold cyan]Prisma Agent[/bold cyan]\n"
         "\n"
         "Coordinates specialized sub-agents to help complete tasks faster.\n"
         "[dim]Type your coding request below. Use /help for commands.[/dim]",
@@ -27,7 +27,7 @@ def print_user_message(text: str):
 
 
 def print_assistant_message(text: str):
-    console.print(f"\n[bold green]Agent[/bold green]")
+    console.print(f"\n[bold green]Prisma[/bold green]")
     md = Markdown(text)
     console.print(Panel(md, border_style="green", box=box.ROUNDED))
 
