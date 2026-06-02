@@ -74,11 +74,14 @@ def _extract_json(text: str) -> str:
 
 
 def build_supervisor_graph():
-    llm = ChatNVIDIA(
+    llm = ChatOpenAI(
         model=SUPERVISOR_MODEL,
         api_key=NVIDIA_API_KEY,
         base_url=NVIDIA_BASE_URL,
-        temperature=0.3,
+        temperature=TEMPERATURE,
+        top_p=TOP_P,
+        max_tokens=MAX_TOKENS,
+        extra_body={"chat_template_kwargs": {"thinking": THINKING}},
     )
 
     def analyze(state: AgentState):
