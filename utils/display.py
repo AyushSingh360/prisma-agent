@@ -47,9 +47,8 @@ def _build_kb():
         toggle_mode()
         mode_label = _mode.upper()
         cols = console.size.columns
-        line = f"[+] Prisma | {mode_label} | {MODEL_SHORT}"
         console.print()
-        console.print(Text(line, style="cyan"))
+        console.print(Text(f"[+] Prisma | {mode_label}", style="cyan"))
         console.print(Text("─", style="dim") * min(cols, 60))
         event.app.invalidate()
 
@@ -171,7 +170,7 @@ def print_exit():
 def get_user_input():
     mode_label = _mode.upper()
     console.print()
-    bar = Text(f"[+] Prisma | {mode_label} | {MODEL_SHORT}", style="cyan")
+    bar = Text(f"[+] Prisma | {mode_label}", style="cyan")
     console.print(bar)
     cols = console.size.columns
     console.print(Text("─", style="dim") * min(cols, 60))
