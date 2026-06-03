@@ -14,3 +14,4 @@ class SubTask(TypedDict):
 class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
     subtasks: list[SubTask]
+    mode: str

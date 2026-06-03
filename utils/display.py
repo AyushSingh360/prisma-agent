@@ -1,4 +1,3 @@
-import time
 from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
@@ -6,7 +5,13 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from rich.align import Align
+from prompt_toolkit import PromptSession
+from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.filters import completion_is_selected, has_completions
 from config import SUPERVISOR_MODEL
+from utils.commands import CommandCompleter
 
 console = Console()
 
@@ -19,6 +24,48 @@ AGENT_COLORS = {
 }
 
 MODEL_SHORT = SUPERVISOR_MODEL.split("/")[-1] if "/" in SUPERVISOR_MODEL else SUPERVISOR_MODEL
+
+_mode = "build"
+_session = None
+
+
+def toggle_mode():
+    global _mode
+    _mode = "plan" if _mode == "build" else "build"
+    return _mode
+
+
+def get_mode():
+    return _mode
+
+
+def _build_kb():
+    kb = KeyBindings()
+
+    @kb.add("tab", filter=~has_completions)
+    def _(event):
+        toggle_mode()
+        mode_label = _mode.upper()
+        cols = console.size.columns
+        line = f"[+] Prisma | {mode_label} | {MODEL_SHORT}"
+        console.print()
+        console.print(Text(line, style="cyan"))
+        console.print(Text("─", style="dim") * min(cols, 60))
+        event.app.invalidate()
+
+    return kb
+
+
+def _get_session():
+    global _session
+    if _session is None:
+        _session = PromptSession(
+            history=InMemoryHistory(),
+            completer=CommandCompleter(),
+            complete_while_typing=True,
+            key_bindings=_build_kb(),
+        )
+    return _session
 
 
 def print_welcome():
@@ -67,8 +114,7 @@ def print_assistant_message(text: str, elapsed: float = 0):
     md = Markdown(text)
     console.print(Panel(md, border_style="green", box=box.ROUNDED))
     if elapsed:
-        status = Text(f"  {elapsed:.1f}s", style="dim")
-        console.print(status)
+        console.print(Text(f"  {elapsed:.1f}s", style="dim"))
 
 
 def print_subtask_header(subtasks: list):
@@ -123,13 +169,16 @@ def print_exit():
 
 
 def get_user_input():
-    bar = Text("[+] ", style="cyan")
-    bar.append("Prisma", style="bold")
-    bar.append(Text(f" | {MODEL_SHORT}", style="dim"))
+    mode_label = _mode.upper()
     console.print()
+    bar = Text(f"[+] Prisma | {mode_label} | {MODEL_SHORT}", style="cyan")
     console.print(bar)
+    cols = console.size.columns
+    console.print(Text("─", style="dim") * min(cols, 60))
     try:
-        text = console.input("[bold yellow]You >[/bold yellow] ").strip()
-        return text
+        text = _get_session().prompt(
+            HTML("<ansiyellow>You &gt;</ansiyellow> "),
+        ).strip()
+        return text, _mode
     except (EOFError, KeyboardInterrupt):
-        return ""
+        return "", _mode

@@ -13,7 +13,9 @@ from .sub_agents.tester import create_tester
 from .sub_agents.spawner import create_spawned_agent
 
 
-SUPERVISOR_PROMPT = """You are the supervisor agent. You coordinate specialized sub-agents to help with coding tasks.
+SUPERVISOR_PROMPT_TEMPLATE = """You are the supervisor agent. You coordinate specialized sub-agents to help with coding tasks.
+
+MODE: {mode}
 
 AVAILABLE SUB-AGENTS:
 - coder: Writes, reads, and modifies code files.
@@ -29,11 +31,11 @@ If the user asks for code work, output ONLY valid JSON with this exact format (n
 {
   "plan": "brief description of the overall approach",
   "subtasks": [
-    {
+    {{
       "agent_type": "searcher",
       "description": "Detailed task description for the agent",
       "relevant_files": []
-    }
+    }}
   ]
 }
 
@@ -44,6 +46,8 @@ GUIDELINES:
 - For multi-step work, include all subtasks in one plan
 - If you're unsure about file locations, use the searcher
 - "spawn" agent can handle anything that isn't code-writing/debugging/searching/testing
+- In "plan" mode, you ONLY output the JSON plan — do not execute anything
+- In "build" mode, you plan AND execute as normal
 
 Current workspace: the project directory
 """
@@ -85,8 +89,10 @@ def build_supervisor_graph():
     )
 
     def analyze(state: AgentState):
+        mode = state.get("mode", "build")
+        prompt = SUPERVISOR_PROMPT_TEMPLATE.format(mode=mode)
         response = llm.invoke([
-            SystemMessage(content=SUPERVISOR_PROMPT),
+            SystemMessage(content=prompt),
             *state["messages"],
         ])
 
@@ -186,7 +192,7 @@ def build_supervisor_graph():
     workflow.add_node("synthesize", synthesize)
 
     def route_after_analyze(state: AgentState):
-        if state.get("subtasks"):
+        if state.get("subtasks") and state.get("mode", "build") == "build":
             return "execute_plan"
         return END
 
