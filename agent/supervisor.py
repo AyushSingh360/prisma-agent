@@ -134,7 +134,7 @@ def build_supervisor_graph():
                         SUB_AGENT_MODEL, NVIDIA_API_KEY, NVIDIA_BASE_URL, task_for_spawn
                     )
 
-                result = agent.invoke({
+                result = executor.invoke({
                     "messages": [HumanMessage(content=description)],
                 })
                 ai_msgs = [m for m in result["messages"] if m.type == "ai"]

@@ -1,5 +1,5 @@
 import sys
-from pathlib import Path
+import time
 
 from langchain_core.messages import HumanMessage
 
@@ -9,7 +9,11 @@ from agent.state import AgentState
 from utils.display import (
     console,
     print_welcome,
+    print_user_message,
     print_assistant_message,
+    print_subtask_header,
+    print_subtask_completed,
+    print_exit,
     print_error,
     get_user_input,
 )
@@ -36,47 +40,55 @@ def main():
             break
 
         if user_input.lower() in ("exit", "quit", "/quit"):
-            console.print("[dim]Exiting.[/dim]")
             break
 
         if user_input.lower() == "/help":
-            console.print(Panel.fit(
-                "[bold]Commands:[/bold]\n"
-                "  [yellow]/help[/yellow]  - Show this help\n"
-                "  [yellow]/clear[/yellow] - Clear conversation history\n"
-                "  [yellow]/quit[/yellow]  - Exit the agent\n"
-                "\n"
-                "[bold]Usage:[/bold]\n"
-                "  Just describe what you want to do with your code.\n"
-                "  Example: [italic]'Add error handling to the API client and write tests'[/italic]",
-                title="Help",
-                border_style="blue",
-            ))
+            console.print()
+            console.print("[bold]commands[/bold]")
+            console.print("  [yellow]/help[/yellow]    show this help")
+            console.print("  [yellow]/clear[/yellow]   clear conversation history")
+            console.print("  [yellow]/quit[/yellow]    exit the agent")
+            console.print()
+            console.print("[bold]usage[/bold]")
+            console.print("  just describe what you want:")
+            console.print('  [italic]"add error handling to the API client and write tests"[/italic]')
             continue
 
         if user_input.lower() == "/clear":
             state = {"messages": [], "subtasks": []}
-            console.print("[dim]Conversation cleared.[/dim]")
+            console.print("[dim]cleared[/dim]")
             continue
 
+        print_user_message(user_input)
+
         try:
-            with console.status("[bold cyan]Planning...") as status:
-                result = graph.invoke({
-                    "messages": state["messages"] + [HumanMessage(content=user_input)],
-                    "subtasks": [],
-                })
+            t0 = time.time()
+            result = graph.invoke({
+                "messages": state["messages"] + [HumanMessage(content=user_input)],
+                "subtasks": [],
+            })
+            elapsed = time.time() - t0
 
             state = result
 
+            subtasks = result.get("subtasks", [])
+            if subtasks:
+                print_subtask_header(subtasks)
+                for s in subtasks:
+                    if s.get("result"):
+                        print_subtask_completed(s, s["result"])
+
             for msg in reversed(result["messages"]):
                 if msg.type == "ai" and msg.content:
-                    print_assistant_message(msg.content)
+                    print_assistant_message(msg.content, elapsed)
                     break
 
         except Exception as e:
             print_error(str(e))
             import traceback
             traceback.print_exc()
+
+    print_exit()
 
 
 if __name__ == "__main__":
