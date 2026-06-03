@@ -28,7 +28,7 @@ HOW TO RESPOND:
 If the user wants conversation or asks a simple question, respond with a plain message.
 
 If the user asks for code work, output ONLY valid JSON with this exact format (no other text):
-{
+{{
   "plan": "brief description of the overall approach",
   "subtasks": [
     {{
@@ -37,7 +37,7 @@ If the user asks for code work, output ONLY valid JSON with this exact format (n
       "relevant_files": []
     }}
   ]
-}
+}}
 
 GUIDELINES:
 - Break complex tasks into parallel subtasks assigned to different agents

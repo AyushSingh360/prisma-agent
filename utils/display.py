@@ -46,10 +46,10 @@ def _build_kb():
     def _(event):
         toggle_mode()
         mode_label = _mode.upper()
-        cols = console.size.columns
+        cols = console.width
         console.print()
         console.print(Text(f"[+] Prisma | {mode_label}", style="cyan"))
-        console.print(Text("─", style="dim") * min(cols, 60))
+        console.print(Text("-" * min(cols, 60), style="dim"))
         event.app.invalidate()
 
     return kb
@@ -172,8 +172,8 @@ def get_user_input():
     console.print()
     bar = Text(f"[+] Prisma | {mode_label}", style="cyan")
     console.print(bar)
-    cols = console.size.columns
-    console.print(Text("─", style="dim") * min(cols, 60))
+    cols = console.width
+    console.print(Text("-" * min(cols, 60), style="dim"))
     try:
         text = _get_session().prompt(
             HTML("<ansiyellow>You &gt;</ansiyellow> "),
