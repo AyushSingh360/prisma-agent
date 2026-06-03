@@ -28,16 +28,16 @@ HOW TO RESPOND:
 If the user wants conversation or asks a simple question, respond with a plain message.
 
 If the user asks for code work, output ONLY valid JSON with this exact format (no other text):
-{{
+{
   "plan": "brief description of the overall approach",
   "subtasks": [
-    {{
+    {
       "agent_type": "searcher",
       "description": "Detailed task description for the agent",
       "relevant_files": []
-    }}
+    }
   ]
-}}
+}
 
 GUIDELINES:
 - Break complex tasks into parallel subtasks assigned to different agents
@@ -90,7 +90,7 @@ def build_supervisor_graph():
 
     def analyze(state: AgentState):
         mode = state.get("mode", "build")
-        prompt = SUPERVISOR_PROMPT_TEMPLATE.format(mode=mode)
+        prompt = SUPERVISOR_PROMPT_TEMPLATE.replace("{mode}", mode)
         response = llm.invoke([
             SystemMessage(content=prompt),
             *state["messages"],
