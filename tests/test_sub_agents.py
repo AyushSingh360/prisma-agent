@@ -47,11 +47,13 @@ def test_create_debugger(mock_factory):
 
 @patch("agent.sub_agents.searcher.create_sub_agent")
 def test_create_searcher(mock_factory):
-    from agent.tools import read_file, grep_search, glob_files, list_directory
+    from agent.tools import read_file, grep_search, glob_files, list_directory, search_web
     mock_factory.return_value = "searcher_agent"
     result = create_searcher("model", "key", "url")
     assert result == "searcher_agent"
     mock_factory.assert_called_once()
+    call_kwargs = mock_factory.call_args[1]
+    assert search_web in call_kwargs["tools"]
 
 
 @patch("agent.sub_agents.tester.create_sub_agent")
