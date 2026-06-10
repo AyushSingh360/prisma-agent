@@ -169,4 +169,99 @@ def list_directory(path: str = ".") -> str:
         return f"Error listing directory: {e}"
 
 
-TOOLS = [read_file, write_file, edit_file, run_command, grep_search, glob_files, list_directory]
+@tool
+def search_web(query: str, max_results: int = 5) -> str:
+    """Search the web for information. Returns formatted results with title, URL, and snippet."""
+    if requests is None:
+        return "Error: requests library not installed. Run: pip install requests"
+
+    provider = SEARCH_PROVIDER.lower()
+
+    if provider == "tavily":
+        return _search_tavily(query, max_results)
+    elif provider == "brave":
+        return _search_brave(query, max_results)
+    else:
+        return f"Error: Unknown search provider '{SEARCH_PROVIDER}'. Use 'tavily' or 'brave'."
+
+
+def _search_tavily(query: str, max_results: int) -> str:
+    if not TAVILY_API_KEY:
+        return "Error: TAVILY_API_KEY not set in environment"
+
+    try:
+        response = requests.post(
+            "https://api.tavily.com/search",
+            json={
+                "api_key": TAVILY_API_KEY,
+                "query": query,
+                "max_results": max_results,
+                "search_depth": "basic",
+                "include_answer": True,
+                "include_raw_content": False,
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        results = data.get("results", [])
+        if not results:
+            return "No results found"
+
+        answer = data.get("answer")
+        output = []
+        if answer:
+            output.append(f"Answer: {answer}\n")
+
+        for i, r in enumerate(results, 1):
+            title = r.get("title", "No title")
+            url = r.get("url", "No URL")
+            content = r.get("content", "No snippet")
+            output.append(f"{i}. {title}\n   URL: {url}\n   {content[:300]}")
+
+        return "\n\n".join(output)
+
+    except requests.exceptions.Timeout:
+        return "Search timed out after 30 seconds"
+    except requests.exceptions.RequestException as e:
+        return f"Search error: {e}"
+
+
+def _search_brave(query: str, max_results: int) -> str:
+    if not BRAVE_API_KEY:
+        return "Error: BRAVE_API_KEY not set in environment"
+
+    try:
+        response = requests.get(
+            "https://api.search.brave.com/res/v1/web/search",
+            headers={
+                "Accept": "application/json",
+                "X-Subscription-Token": BRAVE_API_KEY,
+            },
+            params={"q": query, "count": max_results},
+            timeout=30,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        results = data.get("web", {}).get("results", [])
+        if not results:
+            return "No results found"
+
+        output = []
+        for i, r in enumerate(results, 1):
+            title = r.get("title", "No title")
+            url = r.get("url", "No URL")
+            desc = r.get("description", "No snippet")
+            output.append(f"{i}. {title}\n   URL: {url}\n   {desc[:300]}")
+
+        return "\n\n".join(output)
+
+    except requests.exceptions.Timeout:
+        return "Search timed out after 30 seconds"
+    except requests.exceptions.RequestException as e:
+        return f"Search error: {e}"
+
+
+TOOLS = [read_file, write_file, edit_file, run_command, grep_search, glob_files, list_directory, search_web]

@@ -1,8 +1,9 @@
 import pytest
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 from agent.tools import (
     read_file, write_file, edit_file, run_command,
-    grep_search, glob_files, list_directory,
+    grep_search, glob_files, list_directory, search_web,
 )
 
 

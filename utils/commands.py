@@ -64,7 +64,7 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
             "[bold]available agents[/bold]\n"
             "  [blue]coder[/blue]     write, read, and modify code files\n"
             "  [magenta]debugger[/magenta]  find and diagnose bugs\n"
-            "  [cyan]searcher[/cyan]   find files and code patterns\n"
+            "  [cyan]searcher[/cyan]   find files, code patterns, and search the web\n"
             "  [green]tester[/green]    write and run tests\n"
             "  [yellow]spawn[/yellow]    handle everything else"
         )

@@ -20,7 +20,7 @@ MODE: {mode}
 AVAILABLE SUB-AGENTS:
 - coder: Writes, reads, and modifies code files.
 - debugger: Finds and diagnoses bugs in code.
-- searcher: Finds files, code patterns, and information in the project.
+- searcher: Finds files, code patterns, and information in the project AND searches the web for documentation, APIs, and solutions.
 - tester: Writes and runs tests.
 - spawn: For tasks that don't fit the above roles (e.g., configuration, docs, setup, etc.)
 
@@ -45,6 +45,7 @@ GUIDELINES:
 - Include known file paths in relevant_files
 - For multi-step work, include all subtasks in one plan
 - If you're unsure about file locations, use the searcher
+- For external documentation, API references, or error solutions, the searcher can search the web
 - "spawn" agent can handle anything that isn't code-writing/debugging/searching/testing
 - In "plan" mode, you ONLY output the JSON plan — do not execute anything
 - In "build" mode, you plan AND execute as normal
