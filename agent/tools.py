@@ -1,7 +1,15 @@
+import json
 import subprocess
 import re as re_module
 from pathlib import Path
 from langchain_core.tools import tool
+
+try:
+    import requests
+except ImportError:
+    requests = None
+
+from config import SEARCH_PROVIDER, TAVILY_API_KEY, BRAVE_API_KEY
 
 SKIP_DIRS = {"node_modules", ".git", "__pycache__", ".venv", "venv", ".env", ".idea", ".vscode"}
 
