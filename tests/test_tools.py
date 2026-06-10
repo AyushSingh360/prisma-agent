@@ -121,3 +121,93 @@ def test_read_file_binary(tmp_path):
     path.write_bytes(b"\xff\xfe\x80\x81\x82")
     result = read_file.invoke({"path": str(path)})
     assert "binary file" in result or "Error reading" in result
+
+
+def test_search_web_tavily_no_key(monkeypatch):
+    monkeypatch.setattr("agent.tools.TAVILY_API_KEY", None)
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "tavily")
+    result = search_web.invoke({"query": "test query"})
+    assert "TAVILY_API_KEY not set" in result
+
+
+def test_search_web_brave_no_key(monkeypatch):
+    monkeypatch.setattr("agent.tools.BRAVE_API_KEY", None)
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "brave")
+    result = search_web.invoke({"query": "test query"})
+    assert "BRAVE_API_KEY not set" in result
+
+
+def test_search_web_unknown_provider(monkeypatch):
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "unknown")
+    result = search_web.invoke({"query": "test query"})
+    assert "Unknown search provider" in result
+
+
+@patch("agent.tools.requests.post")
+def test_search_web_tavily_success(mock_post, monkeypatch):
+    monkeypatch.setattr("agent.tools.TAVILY_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "tavily")
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "answer": "Test answer",
+        "results": [
+            {"title": "Result 1", "url": "https://example.com/1", "content": "Content 1"},
+            {"title": "Result 2", "url": "https://example.com/2", "content": "Content 2"},
+        ]
+    }
+    mock_response.raise_for_status.return_value = None
+    mock_post.return_value = mock_response
+
+    result = search_web.invoke({"query": "test query", "max_results": 5})
+    assert "Test answer" in result
+    assert "Result 1" in result
+    assert "https://example.com/1" in result
+    assert "Content 1" in result
+
+
+@patch("agent.tools.requests.get")
+def test_search_web_brave_success(mock_get, monkeypatch):
+    monkeypatch.setattr("agent.tools.BRAVE_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "brave")
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "web": {
+            "results": [
+                {"title": "Brave Result 1", "url": "https://brave.com/1", "description": "Brave desc 1"},
+                {"title": "Brave Result 2", "url": "https://brave.com/2", "description": "Brave desc 2"},
+            ]
+        }
+    }
+    mock_response.raise_for_status.return_value = None
+    mock_get.return_value = mock_response
+
+    result = search_web.invoke({"query": "test query", "max_results": 5})
+    assert "Brave Result 1" in result
+    assert "https://brave.com/1" in result
+    assert "Brave desc 1" in result
+
+
+@patch("agent.tools.requests.post")
+def test_search_web_tavily_timeout(mock_post, monkeypatch):
+    monkeypatch.setattr("agent.tools.TAVILY_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "tavily")
+
+    import requests
+    mock_post.side_effect = requests.exceptions.Timeout()
+
+    result = search_web.invoke({"query": "test query"})
+    assert "timed out" in result.lower()
+
+
+@patch("agent.tools.requests.post")
+def test_search_web_tavily_request_error(mock_post, monkeypatch):
+    monkeypatch.setattr("agent.tools.TAVILY_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "tavily")
+
+    import requests
+    mock_post.side_effect = requests.exceptions.RequestException("Connection error")
+
+    result = search_web.invoke({"query": "test query"})
+    assert "Search error" in result
