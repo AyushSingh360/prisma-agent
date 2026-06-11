@@ -17,7 +17,6 @@ def create_sub_agent(
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
-        model_kwargs={"chat_template_kwargs": {"thinking": THINKING}},
     )
 
     return create_agent(

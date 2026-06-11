@@ -85,7 +85,6 @@ def build_supervisor_graph():
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
-        model_kwargs={"chat_template_kwargs": {"thinking": THINKING}},
     )
 
     def analyze(state: AgentState):
