@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from langchain_openai import ChatOpenAI
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
 from config import TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
 
@@ -11,14 +11,13 @@ def create_sub_agent(
     system_prompt: str,
     tools: list,
 ) -> callable:
-    llm = ChatOpenAI(
+    llm = ChatNVIDIA(
         model=model,
         api_key=api_key,
-        base_url=base_url,
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
-        extra_body={"chat_template_kwargs": {"thinking": THINKING}},
+        model_kwargs={"chat_template_kwargs": {"thinking": THINKING}},
     )
 
     return create_agent(

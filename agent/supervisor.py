@@ -1,7 +1,7 @@
 import json
 import concurrent.futures
 from langgraph.graph import StateGraph, START, END
-from langchain_openai import ChatOpenAI
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from config import NVIDIA_API_KEY, NVIDIA_BASE_URL, SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
@@ -79,14 +79,13 @@ def _extract_json(text: str) -> str:
 
 
 def build_supervisor_graph():
-    llm = ChatOpenAI(
+    llm = ChatNVIDIA(
         model=SUPERVISOR_MODEL,
         api_key=NVIDIA_API_KEY,
-        base_url=NVIDIA_BASE_URL,
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
-        extra_body={"chat_template_kwargs": {"thinking": THINKING}},
+        model_kwargs={"chat_template_kwargs": {"thinking": THINKING}},
     )
 
     def analyze(state: AgentState):
