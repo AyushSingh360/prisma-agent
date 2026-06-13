@@ -11,16 +11,19 @@ def create_sub_agent(
     system_prompt: str,
     tools: list,
 ) -> callable:
-    llm = ChatNVIDIA(
+    llm_kwargs = dict(
         model=model,
         api_key=api_key,
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
     )
+    if THINKING:
+        llm_kwargs["extra_body"] = {"chat_template_kwargs": {"thinking": True}}
+    llm = ChatNVIDIA(**llm_kwargs)
 
     return create_agent(
-        model=llm,
+        llm=llm,
         tools=tools,
-        system_prompt=system_prompt,
+        prompt=system_prompt,
     )

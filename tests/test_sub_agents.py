@@ -8,7 +8,7 @@ from agent.sub_agents.spawner import create_spawned_agent, SPAWNER_PROMPT_TEMPLA
 from agent.tools import TOOLS
 
 
-@patch("agent.sub_agents.base.ChatOpenAI")
+@patch("agent.sub_agents.base.ChatNVIDIA")
 def test_create_sub_agent(mock_chat):
     mock_llm = MagicMock()
     mock_chat.return_value = mock_llm
@@ -80,14 +80,15 @@ def test_create_spawned_agent(mock_factory):
     )
 
 
-@patch("agent.sub_agents.base.ChatOpenAI")
+@patch("agent.sub_agents.base.ChatNVIDIA")
 def test_create_sub_agent_called_with_extra_body(mock_chat):
     mock_llm = MagicMock()
     mock_chat.return_value = mock_llm
-    with patch("agent.sub_agents.base.create_agent") as mock_create:
-        mock_create.return_value = "executor"
-        create_sub_agent("m", "k", "u", "prompt", TOOLS)
-        mock_chat.assert_called_once()
-        kwargs = mock_chat.call_args[1]
-        assert "extra_body" in kwargs
-        assert "chat_template_kwargs" in kwargs["extra_body"]
+    with patch("agent.sub_agents.base.THINKING", True):
+        with patch("agent.sub_agents.base.create_agent") as mock_create:
+            mock_create.return_value = "executor"
+            create_sub_agent("m", "k", "u", "prompt", TOOLS)
+            mock_chat.assert_called_once()
+            kwargs = mock_chat.call_args[1]
+            assert "extra_body" in kwargs
+            assert "chat_template_kwargs" in kwargs["extra_body"]

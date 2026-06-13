@@ -55,8 +55,9 @@ def test_run_command_echo(tmp_path):
 
 def test_run_command_timeout():
     import subprocess
-    result = run_command.invoke({"command": "Start-Sleep -Seconds 120"})
-    assert "timed out" in result
+    with patch("subprocess.run", side_effect=subprocess.TimeoutExpired(cmd="powershell", timeout=60)):
+        result = run_command.invoke({"command": "Start-Sleep -Seconds 120"})
+        assert "timed out" in result
 
 
 def test_grep_search(tmp_path, monkeypatch):

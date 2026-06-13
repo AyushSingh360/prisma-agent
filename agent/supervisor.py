@@ -66,10 +66,8 @@ def _extract_json(text: str) -> str:
     text = text.strip()
     if text.startswith("```"):
         lines = text.splitlines()
-        start = 1
-        if lines[0].startswith("```") and len(lines[0]) > 3:
-            start = 1
-        end = -1
+        start = 1 if len(lines[0]) <= 3 or not lines[0].startswith("```") else 1
+        end = len(lines)
         for i in range(len(lines) - 1, -1, -1):
             if lines[i].strip() == "```":
                 end = i
@@ -79,13 +77,16 @@ def _extract_json(text: str) -> str:
 
 
 def build_supervisor_graph():
-    llm = ChatNVIDIA(
+    llm_kwargs = dict(
         model=SUPERVISOR_MODEL,
         api_key=NVIDIA_API_KEY,
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
     )
+    if THINKING:
+        llm_kwargs["extra_body"] = {"chat_template_kwargs": {"thinking": True}}
+    llm = ChatNVIDIA(**llm_kwargs)
 
     def analyze(state: AgentState):
         mode = state.get("mode", "build")

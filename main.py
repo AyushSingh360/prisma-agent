@@ -2,6 +2,7 @@ import sys
 import time
 
 from langchain_core.messages import HumanMessage
+from rich.text import Text
 
 from config import NVIDIA_API_KEY
 from agent.supervisor import build_supervisor_graph
