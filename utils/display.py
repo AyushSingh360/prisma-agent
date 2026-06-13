@@ -27,6 +27,7 @@ MODEL_SHORT = SUPERVISOR_MODEL.split("/")[-1] if "/" in SUPERVISOR_MODEL else SU
 
 _mode = "build"
 _session = None
+_pending_request = None
 
 
 def toggle_mode():
@@ -39,17 +40,30 @@ def get_mode():
     return _mode
 
 
+def set_pending_request(text: str | None):
+    global _pending_request
+    _pending_request = text
+
+
+def get_pending_request():
+    return _pending_request
+
+
 def _build_kb():
     kb = KeyBindings()
 
     @kb.add("tab", filter=~has_completions)
     def _(event):
+        previous_mode = _mode
         toggle_mode()
         mode_label = _mode.upper()
         cols = console.width
         console.print()
         console.print(Text(f"[+] Prisma | {mode_label}", style="cyan"))
         console.print(Text("-" * min(cols, 60), style="dim"))
+        if previous_mode == "plan" and _mode == "build" and _pending_request:
+            event.app.exit(result="__EXECUTE_PENDING__")
+            return
         event.app.invalidate()
 
     return kb

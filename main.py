@@ -10,6 +10,8 @@ from agent.state import AgentState
 from utils.commands import handle_command
 from utils.display import (
     console,
+    set_pending_request,
+    get_pending_request,
     print_welcome,
     print_user_message,
     print_assistant_message,
@@ -41,6 +43,16 @@ def main():
         if not user_input:
             break
 
+        if user_input == "__EXECUTE_PENDING__":
+            pending_request = get_pending_request()
+            if not pending_request:
+                console.print("[dim]nothing queued to execute[/dim]")
+                continue
+            user_input = pending_request
+            print_user_message(user_input)
+            mode = "build"
+            set_pending_request(None)
+
         if user_input.startswith("/"):
             output, new_state = handle_command(user_input[1:], state)
             if output == "__EXIT__":
@@ -62,7 +74,10 @@ def main():
                     continue
                 user_input = last_human.content
                 print_user_message(user_input)
-                state["messages"] = state["messages"][:-1]
+                if state["messages"] and state["messages"][-1].type != "human":
+                    state["messages"] = state["messages"][:-1]
+                if state["messages"] and state["messages"][-1].type == "human":
+                    state["messages"] = state["messages"][:-1]
             else:
                 if output:
                     console.print()
@@ -85,8 +100,11 @@ def main():
 
             state = result
 
-            subtasks = result.get("subtasks", [])
-            if subtasks:
+            if subtasks := result.get("subtasks", []):
+                if mode == "plan":
+                    set_pending_request(user_input)
+                else:
+                    set_pending_request(None)
                 if mode == "plan":
                     console.print()
                     console.print("[bold]Plan[/bold]")
@@ -95,7 +113,7 @@ def main():
                         console.print(f"  [{color}]{s['agent_type']}[/{color}] {s['description']}")
                     console.print(Text(f"  {elapsed:.1f}s", style="dim"))
                     console.print()
-                    console.print("[dim]press [yellow]Tab[/yellow] to switch to build mode and execute[/dim]")
+                    console.print("[dim]press [yellow]Tab[/yellow] to switch to build mode and execute the queued request[/dim]")
                 else:
                     print_subtask_header(subtasks)
                     for s in subtasks:
@@ -107,6 +125,7 @@ def main():
                             print_assistant_message(msg.content, elapsed)
                             break
             else:
+                set_pending_request(None)
                 for msg in reversed(result["messages"]):
                     if msg.type == "ai" and msg.content:
                         print_assistant_message(msg.content, elapsed)
