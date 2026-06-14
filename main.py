@@ -57,6 +57,12 @@ def main():
             output, new_state = handle_command(user_input[1:], state)
             if output == "__EXIT__":
                 break
+            if output == "__REBUILD_GRAPH__":
+                graph = build_supervisor_graph()
+                thinking_state = "enabled" if new_state and new_state.get("thinking") else "disabled"
+                console.print()
+                console.print(f"thinking mode [yellow]{thinking_state}[/yellow]")
+                continue
             if output == "__RETRY__":
                 if state["messages"]:
                     state["messages"].pop()

@@ -13,3 +13,10 @@ def test_retry_command_signal():
     output, new_state = handle_command("retry", {"messages": [], "subtasks": []})
     assert output == "__RETRY__"
     assert new_state is None
+
+
+def test_think_command_requests_rebuild():
+    output, new_state = handle_command("think", {"messages": [], "subtasks": []})
+    assert output == "__REBUILD_GRAPH__"
+    assert new_state is not None
+    assert "thinking" in new_state

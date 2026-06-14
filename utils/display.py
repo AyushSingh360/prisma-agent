@@ -189,9 +189,14 @@ def get_user_input():
     cols = console.width
     console.print(Text("-" * min(cols, 60), style="dim"))
     try:
-        text = _get_session().prompt(
-            HTML("<ansiyellow>You &gt;</ansiyellow> "),
-        ).strip()
+        try:
+            session = _get_session()
+            text = session.prompt(
+                HTML("<ansiyellow>You &gt;</ansiyellow> "),
+            ).strip()
+        except Exception:
+            # Fallback for environments without console screen buffers (e.g. CI, redirected agent console)
+            text = input("You > ").strip()
         return text, _mode
     except (EOFError, KeyboardInterrupt):
         return "", _mode

@@ -96,7 +96,7 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         from config import THINKING
         new_val = not THINKING
         _set_config("THINKING", new_val)
-        return f"thinking mode [yellow]{'enabled' if new_val else 'disabled'}[/yellow]", None
+        return "__REBUILD_GRAPH__", {"thinking": new_val}
 
     if cmd == "retry":
         return "__RETRY__", None
