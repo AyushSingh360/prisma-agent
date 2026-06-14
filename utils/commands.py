@@ -51,12 +51,12 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         return "__EXIT__", None
 
     if cmd == "model":
-        from config import SUPERVISOR_MODEL, SUB_AGENT_MODEL, OPENROUTER_BASE_URL
+        from config import SUPERVISOR_MODEL, SUB_AGENT_MODEL, BASE_URL
         return (
             f"[bold]model[/bold]\n"
             f"  supervisor  [cyan]{SUPERVISOR_MODEL}[/cyan]\n"
             f"  sub-agent   [cyan]{SUB_AGENT_MODEL}[/cyan]\n"
-            f"  provider    [dim]{OPENROUTER_BASE_URL}[/dim]"
+            f"  provider    [dim]{BASE_URL}[/dim]"
         ), None
 
     if cmd == "agents":
@@ -80,12 +80,12 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         ), None
 
     if cmd == "config":
-        from config import SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING, OPENROUTER_BASE_URL
+        from config import SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING, BASE_URL
         return (
             f"[bold]configuration[/bold]\n"
             f"  supervisor  [cyan]{SUPERVISOR_MODEL}[/cyan]\n"
             f"  sub-agent   [cyan]{SUB_AGENT_MODEL}[/cyan]\n"
-            f"  provider    [dim]{OPENROUTER_BASE_URL}[/dim]\n"
+            f"  provider    [dim]{BASE_URL}[/dim]\n"
             f"  temperature [yellow]{TEMPERATURE}[/yellow]\n"
             f"  top_p       [yellow]{TOP_P}[/yellow]\n"
             f"  max_tokens  [yellow]{MAX_TOKENS}[/yellow]\n"

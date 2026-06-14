@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-from config import OPENROUTER_API_KEY, OPENROUTER_BASE_URL, SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
+from config import API_KEY, BASE_URL, SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
 from .state import AgentState, SubTask
 from .sub_agents.coder import create_coder
 from .sub_agents.debugger import create_debugger
@@ -55,10 +55,10 @@ Current workspace: the project directory
 
 
 AGENT_FACTORY = {
-    "coder": lambda: create_coder(SUB_AGENT_MODEL, OPENROUTER_API_KEY, OPENROUTER_BASE_URL),
-    "debugger": lambda: create_debugger(SUB_AGENT_MODEL, OPENROUTER_API_KEY, OPENROUTER_BASE_URL),
-    "searcher": lambda: create_searcher(SUB_AGENT_MODEL, OPENROUTER_API_KEY, OPENROUTER_BASE_URL),
-    "tester": lambda: create_tester(SUB_AGENT_MODEL, OPENROUTER_API_KEY, OPENROUTER_BASE_URL),
+    "coder": lambda: create_coder(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+    "debugger": lambda: create_debugger(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+    "searcher": lambda: create_searcher(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+    "tester": lambda: create_tester(SUB_AGENT_MODEL, API_KEY, BASE_URL),
 }
 
 
@@ -79,8 +79,8 @@ def _extract_json(text: str) -> str:
 def build_supervisor_graph():
     llm_kwargs = dict(
         model=SUPERVISOR_MODEL,
-        api_key=OPENROUTER_API_KEY,
-        base_url=OPENROUTER_BASE_URL,
+        api_key=API_KEY,
+        base_url=BASE_URL,
         temperature=TEMPERATURE,
         top_p=TOP_P,
         max_tokens=MAX_TOKENS,
@@ -138,7 +138,7 @@ def build_supervisor_graph():
                 else:
                     task_for_spawn = f"Agent type '{agent_type}' requested.\n\nTask: {description}"
                     executor = create_spawned_agent(
-                        SUB_AGENT_MODEL, OPENROUTER_API_KEY, OPENROUTER_BASE_URL, task_for_spawn
+                        SUB_AGENT_MODEL, API_KEY, BASE_URL, task_for_spawn
                     )
 
                 result = executor.invoke({

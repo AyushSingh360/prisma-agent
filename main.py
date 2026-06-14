@@ -4,7 +4,7 @@ import time
 from langchain_core.messages import HumanMessage
 from rich.text import Text
 
-from config import OPENROUTER_API_KEY
+from config import API_KEY
 from agent.supervisor import build_supervisor_graph
 from agent.state import AgentState
 from utils.commands import handle_command
@@ -24,9 +24,9 @@ from utils.display import (
 
 
 def main():
-    if not OPENROUTER_API_KEY or OPENROUTER_API_KEY == "your-key-here":
-        print_error("OPENROUTER_API_KEY not set or still has default value.")
-        console.print("Create a [bold].env[/bold] file with: [green]OPENROUTER_API_KEY=your_actual_key[/green]")
+    if not API_KEY or API_KEY == "your-key-here":
+        print_error("API_KEY not set or still has default value.")
+        console.print("Create a [bold].env[/bold] file with: [green]GROQ_API_KEY=your_actual_key[/green] or [green]OPENROUTER_API_KEY=your_actual_key[/green]")
         sys.exit(1)
 
     print_welcome()
