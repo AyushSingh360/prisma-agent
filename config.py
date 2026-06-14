@@ -3,11 +3,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
-SUPERVISOR_MODEL = "deepseek-ai/deepseek-v4-pro"
-SUB_AGENT_MODEL = "deepseek-ai/deepseek-v4-pro"
+SUPERVISOR_MODEL = os.getenv("SUPERVISOR_MODEL", "google/gemini-2.5-flash")
+SUB_AGENT_MODEL = os.getenv("SUB_AGENT_MODEL", "google/gemini-2.5-flash")
 
 TEMPERATURE = 1.0
 TOP_P = 0.95

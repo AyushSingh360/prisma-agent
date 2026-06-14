@@ -52,7 +52,7 @@ def test_supervisor_prompt_mode_injection():
     assert "MODE: plan" in plan_prompt
 
 
-@patch("agent.supervisor.ChatNVIDIA")
+@patch("agent.supervisor.ChatOpenAI")
 def test_analyze_direct_response(mock_chat):
     mock_llm = MagicMock()
     mock_response = MagicMock()
@@ -72,7 +72,7 @@ def test_analyze_direct_response(mock_chat):
     assert "Hello" in result["messages"][-1].content
 
 
-@patch("agent.supervisor.ChatNVIDIA")
+@patch("agent.supervisor.ChatOpenAI")
 def test_analyze_returns_plan(mock_chat):
     mock_llm = MagicMock()
     plan_json = json.dumps({
@@ -114,7 +114,7 @@ def test_analyze_returns_plan(mock_chat):
     assert result["subtasks"][1]["agent_type"] == "coder"
 
 
-@patch("agent.supervisor.ChatNVIDIA")
+@patch("agent.supervisor.ChatOpenAI")
 def test_plan_mode_does_not_execute(mock_chat):
     mock_llm = MagicMock()
     plan_json = json.dumps({
@@ -145,7 +145,7 @@ def test_plan_mode_does_not_execute(mock_chat):
     assert result["subtasks"][0]["result"] is None
 
 
-@patch("agent.supervisor.ChatNVIDIA")
+@patch("agent.supervisor.ChatOpenAI")
 def test_execute_plan_runs_agents(mock_chat):
     mock_llm = MagicMock()
     mock_response = MagicMock()
@@ -177,7 +177,7 @@ def test_execute_plan_runs_agents(mock_chat):
         assert subtasks[0]["status"] == "completed"
 
 
-@patch("agent.supervisor.ChatNVIDIA")
+@patch("agent.supervisor.ChatOpenAI")
 def test_synthesize_generates_summary(mock_chat):
     mock_llm = MagicMock()
     analyze_response = MagicMock()

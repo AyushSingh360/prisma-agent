@@ -8,7 +8,7 @@ from agent.sub_agents.spawner import create_spawned_agent, SPAWNER_PROMPT_TEMPLA
 from agent.tools import TOOLS
 
 
-@patch("agent.sub_agents.base.ChatNVIDIA")
+@patch("agent.sub_agents.base.ChatOpenAI")
 def test_create_sub_agent(mock_chat):
     mock_llm = MagicMock()
     mock_chat.return_value = mock_llm
@@ -80,7 +80,7 @@ def test_create_spawned_agent(mock_factory):
     )
 
 
-@patch("agent.sub_agents.base.ChatNVIDIA")
+@patch("agent.sub_agents.base.ChatOpenAI")
 def test_create_sub_agent_called_with_extra_body(mock_chat):
     mock_llm = MagicMock()
     mock_chat.return_value = mock_llm

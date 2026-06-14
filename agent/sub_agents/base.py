@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_openai import ChatOpenAI
 
 from config import TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
 
@@ -20,7 +20,7 @@ def create_sub_agent(
     )
     if THINKING:
         llm_kwargs["extra_body"] = {"chat_template_kwargs": {"thinking": True}}
-    llm = ChatNVIDIA(**llm_kwargs)
+    llm = ChatOpenAI(**llm_kwargs)
 
     return create_agent(
         llm=llm,
