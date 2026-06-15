@@ -212,3 +212,67 @@ def test_search_web_tavily_request_error(mock_post, monkeypatch):
 
     result = search_web.invoke({"query": "test query"})
     assert "Search error" in result
+
+
+def test_search_web_google_no_key(monkeypatch):
+    monkeypatch.setattr("agent.tools.GOOGLE_API_KEY", None)
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "google")
+    result = search_web.invoke({"query": "test query"})
+    assert "GOOGLE_API_KEY not set" in result
+
+
+def test_search_web_google_no_cse_id(monkeypatch):
+    monkeypatch.setattr("agent.tools.GOOGLE_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.GOOGLE_CSE_ID", None)
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "google")
+    result = search_web.invoke({"query": "test query"})
+    assert "GOOGLE_CSE_ID not set" in result
+
+
+@patch("agent.tools.requests.get")
+def test_search_web_google_success(mock_get, monkeypatch):
+    monkeypatch.setattr("agent.tools.GOOGLE_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.GOOGLE_CSE_ID", "test-cse")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "google")
+
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "items": [
+            {"title": "Google Result 1", "link": "https://google.com/1", "snippet": "Google desc 1"},
+            {"title": "Google Result 2", "link": "https://google.com/2", "snippet": "Google desc 2"},
+        ]
+    }
+    mock_response.raise_for_status.return_value = None
+    mock_get.return_value = mock_response
+
+    result = search_web.invoke({"query": "test query", "max_results": 5})
+    assert "Google Result 1" in result
+    assert "https://google.com/1" in result
+    assert "Google desc 1" in result
+
+
+@patch("agent.tools.requests.get")
+def test_search_web_google_timeout(mock_get, monkeypatch):
+    monkeypatch.setattr("agent.tools.GOOGLE_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.GOOGLE_CSE_ID", "test-cse")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "google")
+
+    import requests
+    mock_get.side_effect = requests.exceptions.Timeout()
+
+    result = search_web.invoke({"query": "test query"})
+    assert "timed out" in result.lower()
+
+
+@patch("agent.tools.requests.get")
+def test_search_web_google_request_error(mock_get, monkeypatch):
+    monkeypatch.setattr("agent.tools.GOOGLE_API_KEY", "test-key")
+    monkeypatch.setattr("agent.tools.GOOGLE_CSE_ID", "test-cse")
+    monkeypatch.setattr("agent.tools.SEARCH_PROVIDER", "google")
+
+    import requests
+    mock_get.side_effect = requests.exceptions.RequestException("Connection error")
+
+    result = search_web.invoke({"query": "test query"})
+    assert "Search error" in result
+

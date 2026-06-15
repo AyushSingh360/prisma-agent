@@ -9,7 +9,7 @@ try:
 except ImportError:
     requests = None
 
-from config import SEARCH_PROVIDER, TAVILY_API_KEY, BRAVE_API_KEY
+from config import SEARCH_PROVIDER, TAVILY_API_KEY, BRAVE_API_KEY, GOOGLE_API_KEY, GOOGLE_CSE_ID
 
 SKIP_DIRS = {"node_modules", ".git", "__pycache__", ".venv", "venv", ".env", ".idea", ".vscode"}
 
@@ -181,8 +181,10 @@ def search_web(query: str, max_results: int = 5) -> str:
         return _search_tavily(query, max_results)
     elif provider == "brave":
         return _search_brave(query, max_results)
+    elif provider == "google":
+        return _search_google(query, max_results)
     else:
-        return f"Error: Unknown search provider '{SEARCH_PROVIDER}'. Use 'tavily' or 'brave'."
+        return f"Error: Unknown search provider '{SEARCH_PROVIDER}'. Use 'tavily', 'brave', or 'google'."
 
 
 def _search_tavily(query: str, max_results: int) -> str:
@@ -255,6 +257,45 @@ def _search_brave(query: str, max_results: int) -> str:
             url = r.get("url", "No URL")
             desc = r.get("description", "No snippet")
             output.append(f"{i}. {title}\n   URL: {url}\n   {desc[:300]}")
+
+        return "\n\n".join(output)
+
+    except requests.exceptions.Timeout:
+        return "Search timed out after 30 seconds"
+    except requests.exceptions.RequestException as e:
+        return f"Search error: {e}"
+
+
+def _search_google(query: str, max_results: int) -> str:
+    if not GOOGLE_API_KEY:
+        return "Error: GOOGLE_API_KEY not set in environment"
+    if not GOOGLE_CSE_ID:
+        return "Error: GOOGLE_CSE_ID not set in environment"
+
+    try:
+        response = requests.get(
+            "https://www.googleapis.com/customsearch/v1",
+            params={
+                "key": GOOGLE_API_KEY,
+                "cx": GOOGLE_CSE_ID,
+                "q": query,
+                "num": min(max_results, 10),
+            },
+            timeout=30,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        items = data.get("items", [])
+        if not items:
+            return "No results found"
+
+        output = []
+        for i, item in enumerate(items, 1):
+            title = item.get("title", "No title")
+            url = item.get("link", "No URL")
+            snippet = item.get("snippet", "No snippet")
+            output.append(f"{i}. {title}\n   URL: {url}\n   {snippet[:300]}")
 
         return "\n\n".join(output)
 
