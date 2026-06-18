@@ -34,7 +34,7 @@
 
 ---
 
-## Overview
+## Overview (Security Updated)
 
 A **supervisor agent** receives natural language coding requests, intelligently decomposes them into subtasks, and spawns **specialized sub-agents** that execute in **parallel**. Results are synthesized into a clear response.
 
