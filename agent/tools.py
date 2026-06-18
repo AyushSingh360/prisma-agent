@@ -1,4 +1,22 @@
 import json
+import shlex
+from pathlib import Path
+
+# Helper: ensure file operations stay inside the project root
+def _is_path_within_repo(path_str: str) -> bool:
+    """Return True if the given path resolves to a location inside the repository root.
+    This prevents directory‑traversal attacks that could read/write arbitrary files.
+    """
+    try:
+        repo_root = Path.cwd().resolve()
+        target_path = Path(path_str).resolve()
+        return repo_root == target_path or repo_root in target_path.parents
+    except Exception:
+        return False
+
+# Whitelisted commands for run_command (PowerShell). Only allow safe utilities.
+_ALLOWED_COMMANDS = {"pytest", "python", "pip", "git", "dir", "ls", "echo", "Get-ChildItem", "Set-Content", "Remove-Item"}
+
 import subprocess
 import re as re_module
 from pathlib import Path
@@ -21,6 +39,8 @@ def _should_skip(path: Path) -> bool:
 @tool
 def read_file(path: str) -> str:
     """Read the contents of a file. Returns up to 50000 characters."""
+    if not _is_path_within_repo(path):
+        return f"Error: Access to path '{path}' is not allowed"
     try:
         with open(path, "r", encoding="utf-8") as f:
             content = f.read(50000)
@@ -36,6 +56,8 @@ def read_file(path: str) -> str:
 @tool
 def write_file(path: str, content: str) -> str:
     """Write content to a file. Creates parent directories if needed."""
+    if not _is_path_within_repo(path):
+        return f"Error: Writing to path '{path}' is not allowed"
     try:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -49,6 +71,8 @@ def write_file(path: str, content: str) -> str:
 @tool
 def edit_file(path: str, old_string: str, new_string: str) -> str:
     """Edit a file by replacing the first occurrence of old_string with new_string."""
+    if not _is_path_within_repo(path):
+        return f"Error: Editing path '{path}' is not allowed"
     try:
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -64,7 +88,16 @@ def edit_file(path: str, old_string: str, new_string: str) -> str:
 
 @tool
 def run_command(command: str) -> str:
-    """Run a PowerShell command on Windows. Returns stdout and stderr."""
+    """Run a PowerShell command on Windows. Returns stdout and stderr.
+    Only whitelisted commands are allowed to mitigate arbitrary code execution.
+    """
+    # Extract the first token of the command to compare against whitelist
+    try:
+        first_token = shlex.split(command)[0] if command.strip() else ""
+    except Exception:
+        first_token = command.split()[0] if command.strip() else ""
+    if first_token not in _ALLOWED_COMMANDS:
+        return f"Error: Command '{first_token}' is not allowed"
     try:
         result = subprocess.run(
             ["powershell", "-NoProfile", "-Command", command],
