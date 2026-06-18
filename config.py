@@ -43,3 +43,6 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 BRAVE_API_KEY = os.getenv("BRAVE_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GOOGLE_CSE_ID = os.getenv("GOOGLE_CSE_ID") or os.getenv("GOOGLE_CX") or "AQ.Ab8RN6KCx2Gfep4AtBJoQDEnSniAY1Gxu4NnkuCmhQuCfuM08Q"
+
+# AeroLive API key (provided by user)
+AERO_API_KEY = os.getenv("AERO_API_KEY")
