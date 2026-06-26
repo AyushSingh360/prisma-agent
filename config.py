@@ -5,13 +5,16 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 # Check model names from environment first
 env_supervisor_model = os.getenv("SUPERVISOR_MODEL")
 env_sub_agent_model = os.getenv("SUB_AGENT_MODEL")
 
 # Determine defaults based on available keys
-if OPENROUTER_API_KEY and not OPENROUTER_API_KEY.startswith("your-"):
+if NVIDIA_API_KEY and not NVIDIA_API_KEY.startswith("your-"):
+    DEFAULT_MODEL = "minimaxai/minimax-m3"
+elif OPENROUTER_API_KEY and not OPENROUTER_API_KEY.startswith("your-"):
     DEFAULT_MODEL = "google/gemini-2.5-flash"
 elif GROQ_API_KEY and GROQ_API_KEY.startswith("gsk_"):
     DEFAULT_MODEL = "llama-3.3-70b-versatile"
@@ -25,6 +28,9 @@ SUB_AGENT_MODEL = env_sub_agent_model or DEFAULT_MODEL
 if "gemini" in SUPERVISOR_MODEL.lower() or SUPERVISOR_MODEL.startswith("google/"):
     API_KEY = OPENROUTER_API_KEY
     BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+elif "minimax" in SUPERVISOR_MODEL.lower() or "nvidia" in SUPERVISOR_MODEL.lower():
+    API_KEY = NVIDIA_API_KEY
+    BASE_URL = os.getenv("NVIDIA_BASE_URL", "https://integrate.api.nvidia.com/v1")
 else:
     if GROQ_API_KEY and GROQ_API_KEY.startswith("gsk_") and any(m in SUPERVISOR_MODEL.lower() for m in ["llama", "mixtral", "gemma"]):
         API_KEY = GROQ_API_KEY

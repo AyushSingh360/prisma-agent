@@ -35,17 +35,17 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
     cmd = cmd.lower().strip()
 
     if cmd == "help":
-        lines = ["[bold]commands[/bold]\n"]
+        lines = ["commands:\n"]
         for group_name, cmds in COMMANDS.items():
-            lines.append(f"  [bold]{group_name}[/bold]")
+            lines.append(f"  {group_name}")
             for name, desc in cmds.items():
-                lines.append(f"    [yellow]/{name:<12}[/yellow] {desc}")
+                lines.append(f"    /{name:<12} {desc}")
             lines.append("")
         return "\n".join(lines), None
 
     if cmd == "clear":
         new_state = {"messages": [], "subtasks": []}
-        return "[dim]conversation cleared[/dim]", new_state
+        return "conversation cleared", new_state
 
     if cmd in ("quit", "exit"):
         return "__EXIT__", None
@@ -53,20 +53,20 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
     if cmd == "model":
         from config import SUPERVISOR_MODEL, SUB_AGENT_MODEL, BASE_URL
         return (
-            f"[bold]model[/bold]\n"
-            f"  supervisor  [cyan]{SUPERVISOR_MODEL}[/cyan]\n"
-            f"  sub-agent   [cyan]{SUB_AGENT_MODEL}[/cyan]\n"
-            f"  provider    [dim]{BASE_URL}[/dim]"
+            f"model\n"
+            f"  supervisor  {SUPERVISOR_MODEL}\n"
+            f"  sub-agent   {SUB_AGENT_MODEL}\n"
+            f"  provider    {BASE_URL}"
         ), None
 
     if cmd == "agents":
         agents_info = (
-            "[bold]available agents[/bold]\n"
-            "  [blue]coder[/blue]     write, read, and modify code files\n"
-            "  [magenta]debugger[/magenta]  find and diagnose bugs\n"
-            "  [cyan]searcher[/cyan]   find files, code patterns, and search the web\n"
-            "  [green]tester[/green]    write and run tests\n"
-            "  [yellow]spawn[/yellow]    handle everything else"
+            "agents\n"
+            "  coder     write, read, and modify code files\n"
+            "  debugger  find and diagnose bugs\n"
+            "  searcher  find files, code patterns, and search the web\n"
+            "  tester    write and run tests\n"
+            "  spawn     handle everything else"
         )
         return agents_info, None
 
@@ -74,22 +74,22 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         msgs = len(state.get("messages", []))
         tasks = len(state.get("subtasks", []))
         return (
-            f"[bold]session[/bold]\n"
-            f"  messages   [bold]{msgs}[/bold]\n"
-            f"  sub-tasks  [bold]{tasks}[/bold]"
+            f"session\n"
+            f"  messages   {msgs}\n"
+            f"  sub-tasks  {tasks}"
         ), None
 
     if cmd == "config":
         from config import SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING, BASE_URL
         return (
-            f"[bold]configuration[/bold]\n"
-            f"  supervisor  [cyan]{SUPERVISOR_MODEL}[/cyan]\n"
-            f"  sub-agent   [cyan]{SUB_AGENT_MODEL}[/cyan]\n"
-            f"  provider    [dim]{BASE_URL}[/dim]\n"
-            f"  temperature [yellow]{TEMPERATURE}[/yellow]\n"
-            f"  top_p       [yellow]{TOP_P}[/yellow]\n"
-            f"  max_tokens  [yellow]{MAX_TOKENS}[/yellow]\n"
-            f"  thinking    [yellow]{THINKING}[/yellow]"
+            f"config\n"
+            f"  supervisor  {SUPERVISOR_MODEL}\n"
+            f"  sub-agent   {SUB_AGENT_MODEL}\n"
+            f"  provider    {BASE_URL}\n"
+            f"  temperature {TEMPERATURE}\n"
+            f"  top_p       {TOP_P}\n"
+            f"  max_tokens  {MAX_TOKENS}\n"
+            f"  thinking    {THINKING}"
         ), None
 
     if cmd == "think":
@@ -105,8 +105,8 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         from datetime import datetime
         msgs = state.get("messages", [])
         if not msgs:
-            return "[dim]no messages to export[/dim]", None
-        lines = [f"# Prisma Agent Export — {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"]
+            return "no messages to export", None
+        lines = [f"# Prisma Agent Export - {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"]
         for m in msgs:
             role = "You" if m.type == "human" else "Prisma"
             lines.append(f"**{role}:** {m.content}\n")
@@ -114,7 +114,7 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         fname = f"prisma-export-{datetime.now().strftime('%Y%m%d-%H%M%S')}.md"
         with open(fname, "w", encoding="utf-8") as f:
             f.write(content)
-        return f"exported to [green]{fname}[/green] ({len(msgs)} messages)", None
+        return f"exported to {fname} ({len(msgs)} messages)", None
 
     return None, None
 

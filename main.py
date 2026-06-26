@@ -4,7 +4,7 @@ import time
 from langchain_core.messages import HumanMessage
 from rich.text import Text
 
-from config import API_KEY
+from config import API_KEY, NVIDIA_API_KEY
 from agent.supervisor import build_supervisor_graph
 from agent.state import AgentState
 from utils.commands import handle_command
@@ -25,9 +25,9 @@ from utils.display import (
 
 def main():
     if not API_KEY or API_KEY == "your-key-here":
-        print_error("API_KEY not set or still has default value.")
-        console.print("Create a [bold].env[/bold] file with: [green]GROQ_API_KEY=your_actual_key[/green] or [green]OPENROUTER_API_KEY=your_actual_key[/green]")
-        sys.exit(1)
+        if not NVIDIA_API_KEY or NVIDIA_API_KEY == "your-nvidia-api-key":
+            print_error("API key not set. Add GROQ_API_KEY, OPENROUTER_API_KEY, or NVIDIA_API_KEY to .env")
+            sys.exit(1)
 
     print_welcome()
 
@@ -59,8 +59,7 @@ def main():
             if output == "__REBUILD_GRAPH__":
                 graph = build_supervisor_graph()
                 thinking_state = "enabled" if new_state and new_state.get("thinking") else "disabled"
-                console.print()
-                console.print(f"thinking mode [yellow]{thinking_state}[/yellow]")
+                console.print(f"thinking: {thinking_state}")
                 continue
             if output == "__RETRY__":
                 if state["messages"]:
@@ -112,13 +111,13 @@ def main():
                     set_pending_request(None)
                 if mode == "plan":
                     console.print()
-                    console.print("[bold]Plan[/bold]")
+                    console.print("plan:")
                     for s in subtasks:
                         color = {"coder": "blue", "debugger": "magenta", "searcher": "cyan", "tester": "green"}.get(s["agent_type"], "white")
                         console.print(f"  [{color}]{s['agent_type']}[/{color}] {s['description']}")
                     console.print(Text(f"  {elapsed:.1f}s", style="dim"))
                     console.print()
-                    console.print("[dim]press [yellow]Tab[/yellow] to switch to build mode and execute the queued request[/dim]")
+                    console.print("[dim]Tab to switch to build mode and execute[/dim]")
                 else:
                     print_subtask_header(subtasks)
                     for s in subtasks:
