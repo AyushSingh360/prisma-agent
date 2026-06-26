@@ -12,7 +12,9 @@ from utils.display import (
     console,
     set_pending_request,
     get_pending_request,
+    get_mode,
     print_welcome,
+    print_prompt_chrome,
     print_user_message,
     print_assistant_message,
     print_subtask_header,
@@ -38,6 +40,7 @@ def main():
     }
 
     while True:
+        print_prompt_chrome(mode=get_mode(), pending_request=get_pending_request())
         user_input, mode = get_user_input()
         if not user_input:
             break

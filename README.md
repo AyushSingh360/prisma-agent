@@ -316,7 +316,7 @@ python main.py
 ╭────────────────────────────────────────────────╮
 │                   Welcome                      │
 │                                                │
-│             Prisma Agent                       │
+│                 Prisma                         │
 │                                                │
 │   Coordinates specialized sub-agents to        │
 │   help complete tasks faster.                  │

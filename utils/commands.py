@@ -106,7 +106,7 @@ def handle_command(cmd: str, state: dict) -> tuple[str, dict | None]:
         msgs = state.get("messages", [])
         if not msgs:
             return "no messages to export", None
-        lines = [f"# Prisma Agent Export - {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"]
+        lines = [f"# Prisma Export - {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"]
         for m in msgs:
             role = "You" if m.type == "human" else "Prisma"
             lines.append(f"**{role}:** {m.content}\n")
