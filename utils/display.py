@@ -166,14 +166,14 @@ def print_prompt_chrome(mode: str, pending_request: str | None):
     status.add_column(justify="right")
     status.add_row(
         Text(f"{APP_NAME}", style="bold cyan"),
-        Text(f"{mode.upper()}  •  {pending}  •  {MODEL}", style="dim"),
+        Text(f"{mode.upper()} | {pending} | {MODEL}", style="dim"),
     )
     console.print(Panel(status, border_style="dim", box=box.SQUARE, padding=(0, 1)))
 
 
 def get_user_input():
     try:
-        prompt = f"<ansicyan>{APP_NAME.lower()}</ansicyan> <ansidim>[{MODE}]</ansidim> › "
+        prompt = f"<ansicyan>{APP_NAME.lower()}</ansicyan> <ansidim>[{MODE}]</ansidim> > "
 
         text = get_session().prompt(HTML(prompt)).strip()
         return text, MODE
