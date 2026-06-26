@@ -78,7 +78,7 @@ def get_pending_request():
 def print_welcome():
     console.print()
     title = Text(APP_NAME, style="bold cyan")
-    subtitle = Text("Claude-style CLI for your AI agent", style="dim")
+    subtitle = Text("Prisma CLI for your AI agent", style="dim")
     header = Group(
         title,
         subtitle,
