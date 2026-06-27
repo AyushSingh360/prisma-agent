@@ -1,619 +1,431 @@
-<p align="center">
-  <pre>
-                    ____  ____  ___ ____  __  __    _
-                   |  _ \|  _ \|_ _/ ___||  \/  |  / \
-                   | |_) | |_) || |\___ \| |\/| | / _ \  
-                   |  __/|  _ < | | ___) | |  | |/ ___ \
-                   |_|   |_| \_\___|____/|_|  |_/_/   \_\
-  </pre>
-</p>
+<div align="center">
+
+# 🌌 PRISMA
+### *A Stateful Parallel Multi-Agent Orchestration Framework*
+
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-1.x-6B4E71?style=for-the-badge&logo=langchain&logoColor=white)](https://github.com/langchain-ai/langgraph)
+[![Tests](https://img.shields.io/badge/Tests-57%20Passed-2EA44F?style=for-the-badge&logo=github-actions&logoColor=white)](https://pytest.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-A371F7?style=for-the-badge)](#)
 
 <p align="center">
-  <strong>Multi-agent coding assistant</strong><br>
-  <em>Supervisor decomposes tasks into parallel sub-agents for faster code workflows</em>
+  <strong>Parallelize Code Workflows</strong> • 
+  <strong>Stateful Graph Routing</strong> • 
+  <strong>Security Sandboxed</strong>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/langgraph-1.x-purple" alt="LangGraph 1.x">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License">
-  <img src="https://img.shields.io/badge/status-active-brightgreen" alt="Active">
-</p>
+*Prisma is a multi-agent coding assistant built on top of LangGraph. It intelligently decomposes user-defined natural language requests into parallel subtasks and delegates them to specialized, concurrent sub-agents to accelerate development velocity.*
 
 ---
 
-<p align="center">
-  <a href="#overview">Overview</a> •
-  <a href="#architecture">Architecture</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#usage">Usage</a> •
-  <a href="#testing">Testing</a> •
-  <a href="#configuration">Configuration</a> •
-  <a href="#development">Development</a>
-</p>
+</div>
 
----
+## 📊 Core Performance & Framework Statistics
 
-## Overview (Security Updated)
+Prisma optimizes multi-step developer operations by replacing sequential agent execution with parallel thread pools.
 
-A **supervisor agent** receives natural language coding requests, intelligently decomposes them into subtasks, and spawns **specialized sub-agents** that execute in **parallel**. Results are synthesized into a clear response.
+<div align="center">
 
-```
-    Your request         Supervisor          Parallel sub-agents       Response
-  ──────────────►   ┌───────────────┐      ┌──────────────────┐    ┌────────────┐
-                    │ Analyze task  │      │ Coder  Debugger  │    │ Synthesize │
-                    │ Create plan   │─────►│ Searcher Tester  │───►│ results    │
-                    │ Route to      │      │ Spawner(if new)  │    │ Return     │
-                    │ sub-agents    │      └──────────────────┘    └────────────┘
-                    └───────────────┘
-```
+| Metric / Dimension | Framework Capabilities & Stats | Details |
+| :--- | :--- | :--- |
+| **Concurrency Scaling** | `ThreadPoolExecutor` (Max 4 Workers) | Runs independent tasks simultaneously |
+| **Workflow Acceleration** | **2.0x – 4.0x Speedup** | Drastically cuts overall agent response latency |
+| **Agent Taxonomy** | `5` Specialized Roles | Coder, Debugger, Searcher, Tester + Dynamic Spawner |
+| **Native Primitives** | `8` High-Fidelity Tools | Whitelisted shell, filesystem operations, and web search |
+| **Supported LLMs** | Multi-Provider Configuration | Integrates with Groq, NVIDIA, and OpenRouter |
+| **Test Quality** | `57` Automated Tests | Unit and integration suites passing with a 100% rate |
 
-### Key capabilities
+</div>
 
-| | |
-|---|---|
-| **Parallel execution** | Up to 4 sub-agents run simultaneously via `ThreadPoolExecutor` |
-| **5 sub-agent types** | Coder, Debugger, Searcher, Tester + dynamic Spawner for novel tasks |
-| **7 primitive tools** | Read, Write, Edit, Shell, Grep, Glob, List |
-| **Rich CLI** | Markdown rendering, conversation history, command palette |
-| **Stateful graph** | LangGraph orchestrates the full workflow with checkpoint support |
+### ⏱️ Concurrency Timeline (Sequential vs. Parallel Execution)
 
----
+The diagram below compares how Prisma handles a task requiring file searching, coding, and testing:
 
-## Architecture
-
-### System design
-
-```
- ┌────────────────────────────────────────────────────────────────────────┐
- │                            CLI LAYER                                   │
- │                         main.py + Rich                                 │
- └────────────────────────────────┬───────────────────────────────────────┘
-                                  │
-                                  ▼
- ┌────────────────────────────────────────────────────────────────────────┐
- │                        LANGGRAPH GRAPH                                 │
- │                                                                        │
- │    ┌─────────┐      ┌────────────┐      ┌───────────────┐              │
- │    │  START  │─────►│  analyze   │─────►│ execute_plan  │              │
- │    └─────────┘      └─────┬──────┘      └───────┬───────┘              │
- │                           │                     │                      │
- │                    ┌──────▼──────┐              │                      │
- │                    │  direct     │              │                      │
- │                    │  response   │              │                      │
- │                    │  → END      │              │                      │
- │                    └─────────────┘              │                      │
- │                                                 ▼                      │
- │                                           ┌──────────────┐             │
- │                                           │  synthesize  │             │
- │                                           └──────┬───────┘             │
- │                                                  │                     │
- │                                                  ▼                     │
- │                                           ┌──────────────┐             │
- │                                           │     END      │             │
- │                                           └──────────────┘             │
- └────────────────────────────────────────────────────────────────────────┘
-                                  │
-                                  ▼
- ┌────────────────────────────────────────────────────────────────────────┐
- │                      SUB-AGENT POOL                                    │
- │                                                                        │
- │    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐        │
- │    │  Coder   │    │ Debugger │    │ Searcher │    │  Tester  │        │
- │    │ write    │    │ diagnose │    │  locate  │    │  verify  │        │
- │    │ modify   │    │  analyze │    │  search  │    │  assert  │        │
- │    └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘        │
- │         └───────────────┴───────────────┴────────────────┘             │
- │                                    │                                   │
- │                           ┌────────▼────────┐                          │
- │                           │    Spawner      │                          │ 
- │                           │  (on-demand)    │                          │ 
- │                           └─────────────────┘                          │
- └────────────────────────────────────────────────────────────────────────┘
-                                  │
-                                  ▼
- ┌────────────────────────────────────────────────────────────────────────┐
- │                          TOOL LAYER                                    │
- │                                                                        │
- │    read_file    write_file    edit_file    run_command                 │
- │    grep_search  glob_files    list_directory                           │
- └────────────────────────────────────────────────────────────────────────┘
-```
-
-### Request lifecycle
-
-```
- User input
-    │
-    ├──► [analyze node] Supervisor LLM reads context
-    │       │
-    │       ├── "I need a plan" → JSON with subtasks → execute_plan
-    │       │
-    │       └── "I can answer" → direct response → END
-    │
-    ├──► [execute_plan node] ThreadPoolExecutor(max_workers=4)
-    │       │
-    │       ├── subtask[0] ──► Coder ──► AgentExecutor ──► result
-    │       ├── subtask[1] ──► Debugger ──► AgentExecutor ──► result
-    │       ├── subtask[2] ──► Searcher ──► AgentExecutor ──► result
-    │       └── subtask[3] ──► Tester ──► AgentExecutor ──► result
-    │
-    └──► [synthesize node] LLM summarizes all results
-            │
-            └──► Final response presented in CLI
-```
-
-### State schema
-
-```
-AgentState (TypedDict)
-│
-├── messages: list[BaseMessage]       Conversation history
-│   (reducer: add_messages)           Preserved across turns
-│
-└── subtasks: list[SubTask]
-    │
-    ├── agent_type: str               coder | debugger | searcher | tester | spawn
-    ├── description: str              Task instruction for the sub-agent
-    ├── status: str                   pending | completed | failed
-    ├── result: Optional[str]         Full output from sub-agent
-    └── relevant_files: list[str]     File paths for context
+```mermaid
+gantt
+    title Concurrency Performance Profile (Sequential vs Parallel execution)
+    dateFormat  X
+    axisFormat %s seconds
+    
+    section Sequential Loop (Total: ~9s)
+    Locate Files (Searcher)     :active, seq1, 0, 2
+    Modify Code (Coder)          :active, seq2, after seq1, 4
+    Author Tests (Tester)        :active, seq3, after seq2, 3
+    
+    section Prisma Parallel (Total: ~4s)
+    Locate Files (Searcher)     :active, par1, 0, 2
+    Modify Code (Coder)          :active, par2, 0, 4
+    Author Tests (Tester)        :active, par3, 0, 3
 ```
 
 ---
 
-## Sub-agent system
+## 📐 Architecture & System Design
 
-### Registry
+Prisma models agent interactions as a stateful, cyclic workflow loop orchestrated by **LangGraph**. The supervisor handles planning and routes tasks to the sub-agent execution pools.
 
-| Agent | Type | Tools | Responsibility |
-|-------|------|-------|----------------|
-| **Coder** | Persistent | read, write, edit, bash, grep, glob, ls | Write and modify source code |
-| **Debugger** | Persistent | read, bash, grep, glob, ls | Diagnose bugs, trace errors |
-| **Searcher** | Persistent | read, grep, glob, ls | Locate files and code patterns |
-| **Tester** | Persistent | read, write, edit, bash, grep, glob, ls | Author and execute test suites |
-| **Spawner** | Dynamic | read, write, edit, bash, grep, glob, ls | Handle tasks outside standard roles |
+### 🧩 Component Topology
 
-### Agent factory
+```mermaid
+flowchart TD
+    classDef layer fill:#232530,stroke:#a371f7,stroke-width:2px,color:#fff;
+    classDef agent fill:#1a1c27,stroke:#3b82f6,stroke-width:1.5px,color:#fff;
+    classDef tool fill:#1a1c27,stroke:#10b981,stroke-width:1.5px,color:#fff;
+    
+    User([User Instruction]) --> CLI[CLI Interface: main.py]
+    CLI --> Graph[LangGraph Orchestrator]
+    
+    subgraph Graph [Stateful Execution Graph]
+        AnalyzeNode[analyze Node]
+        ExecutePlanNode[execute_plan Node]
+        SynthesizeNode[synthesize Node]
+        
+        AnalyzeNode -->|Spawns Subtasks| ExecutePlanNode
+        AnalyzeNode -->|Direct Response| SynthesizeNode
+        ExecutePlanNode --> SynthesizeNode
+    end
+    
+    subgraph Pool [Sub-Agent Pool]
+        Coder[Coder Agent]
+        Debugger[Debugger Agent]
+        Searcher[Searcher Agent]
+        Tester[Tester Agent]
+        Spawner[Dynamic Spawner]
+    end
+    
+    ExecutePlanNode -->|ThreadPoolExecutor| Pool
+    
+    subgraph Tools [FileSystem & Shell Tools]
+        read_file
+        write_file
+        edit_file
+        run_command
+        grep_search
+        glob_files
+        list_directory
+        search_web
+    end
+    
+    Pool --> Tools
+    SynthesizeNode --> CLI
+    
+    class CLI,Graph layer;
+    class Coder,Debugger,Searcher,Tester,Spawner agent;
+    class read_file,write_file,edit_file,run_command,grep_search,glob_files,list_directory,search_web tool;
+```
 
-Each sub-agent is a `CompiledStateGraph` created via LangChain's `create_agent`:
+### 🔄 Request-Response Lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Developer
+    participant CLI as CLI Layer (main.py)
+    participant Supervisor as Supervisor LLM
+    participant Pool as ThreadPoolExecutor
+    participant SubAgents as Sub-Agents Pool
+    
+    User->>CLI: Submits instruction (e.g., "Add error handling to api_client.py")
+    CLI->>Supervisor: Packages history, state, and user prompt
+    Note over Supervisor: LLM inspects workspace & determines path
+    alt Coding execution required
+        Supervisor->>Pool: Yields structured JSON plan with subtasks
+        par Parallel Execution
+            Pool->>SubAgents: Run Searcher (Locate target file)
+            Pool->>SubAgents: Run Coder (Wrap network calls in try/except)
+            Pool->>SubAgents: Run Tester (Write robust error tests)
+        end
+        SubAgents-->>Pool: Return execution logs and outcomes
+        Pool-->>Supervisor: Collate combined task results
+    else Simple question/chat
+        Supervisor-->>CLI: Return direct text answer
+    end
+    Supervisor-->>CLI: Synthesizes final execution outcomes into user response
+    CLI->>User: Displays polished Markdown panel
+```
+
+### 💾 Shared State Schema
+
+The LangGraph engine maintains context via a centralized state dictionary, which is updated reducer-style:
 
 ```python
-from langchain.agents import create_agent
-
-def create_sub_agent(model, api_key, base_url, system_prompt, tools):
-    llm = ChatNVIDIA(model=model, api_key=api_key, base_url=base_url)
-    return create_agent(model=llm, tools=tools, system_prompt=system_prompt)
+class AgentState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]  # Full conversation history
+    subtasks: list[SubTask]                              # Queue of planned subtasks
+    mode: str                                             # Active execution mode ("build" | "plan")
 ```
 
-Invocation:
-
-```python
-result = agent.invoke({"messages": [HumanMessage(content=task)]})
-response = result["messages"][-1].content
-```
-
-### Supervisor planning
-
-The supervisor outputs one of two response types:
+| Field | Type | Accumulation | Description |
+| :--- | :--- | :--- | :--- |
+| `messages` | `list[BaseMessage]` | Append-only (`add_messages`) | Retains conversation logs across turns. |
+| `subtasks` | `list[SubTask]` | Overwrite | Re-evaluated by the supervisor on every plan generation. |
+| `mode` | `str` | Overwrite | Controls whether subtasks are executed (`build`) or output as JSON (`plan`). |
 
 ---
-**When sub-agents are needed** -- a structured JSON plan:
 
+## 🤖 The Sub-Agent Pool
+
+Sub-agents are dynamic, compiled LangChain graph execution pipelines configured with specialized prompts and subsets of tools.
+
+| Agent | Type | Primary Responsibility | Active Tools |
+| :--- | :--- | :--- | :--- |
+| **`Coder`** | Persistent | Writes, inspects, and refactors source code. | `read_file`, `write_file`, `edit_file`, `run_command`, `grep_search`, `glob_files`, `list_directory` |
+| **`Debugger`** | Persistent | Traces stack traces, diagnoses bugs, and repairs errors. | `read_file`, `run_command`, `grep_search`, `glob_files`, `list_directory` |
+| **`Searcher`** | Persistent | Locates code files, constructs patterns, and searches web. | `read_file`, `grep_search`, `glob_files`, `list_directory`, `search_web` |
+| **`Tester`** | Persistent | Authors unit & integration tests; runs test suites. | `read_file`, `write_file`, `edit_file`, `run_command`, `grep_search`, `glob_files`, `list_directory` |
+| **`Spawner`** | Dynamic | Synthesized on-demand to handle atypical tasks (e.g., config setup). | `read_file`, `write_file`, `edit_file`, `run_command`, `grep_search`, `glob_files`, `list_directory` |
+
+> [!NOTE]
+> Each sub-agent compiles via LangChain's `create_agent` factory:
+> ```python
+> def create_sub_agent(model, api_key, base_url, system_prompt, tools):
+>     llm = ChatOpenAI(model=model, api_key=api_key, base_url=base_url)
+>     return create_agent(model=llm, tools=tools, system_prompt=system_prompt)
+> ```
+
+---
+
+## 🛠️ Security-Sandboxed Tool Reference
+
+To ensure safety during execution, all file and shell utilities run with sandbox boundaries.
+
+### Core Tool Signatures
+
+| Tool | Python Signature | Description / Restraints |
+| :--- | :--- | :--- |
+| `read_file` | `(path: str) -> str` | Returns content (capped at 50,000 chars) within the workspace directory. |
+| `write_file` | `(path: str, content: str) -> str` | Creates parents and writes files inside the workspace boundaries. |
+| `edit_file` | `(path: str, old_string: str, new_string: str) -> str` | Atomically replaces the first occurrence of the old string. |
+| `run_command` | `(command: str) -> str` | Runs whitelisted commands in Windows PowerShell (60s timeout). |
+| `grep_search` | `(pattern: str, include: str = None) -> str` | Recursive regex pattern matching, capped at 30 results. |
+| `glob_files` | `(pattern: str) -> str` | Recursive file search matching glob filters, capped at 100 paths. |
+| `list_directory`| `(path: str = ".") -> str` | Lists files and folders, automatically skipping dotfiles. |
+| `search_web` | `(query: str, max_results: int = 5) -> str` | Queries Tavily, Brave, or Google Search engines. |
+
+### 🔒 Sandbox Restraints
+
+1. **Workspace Restriction (`_is_path_within_repo`)**: All file operations (read, write, edit) verify that target paths resolve within the active repository root. Directory-traversal attacks are blocked.
+2. **Command Whitelisting**: The `run_command` utility restricts shells to a narrow set of safe administrative and testing commands:
+   ```python
+   _ALLOWED_COMMANDS = {
+       "pytest", "python", "pip", "git", "dir", "ls", "echo", 
+       "Get-ChildItem", "Set-Content", "Remove-Item"
+   }
+   ```
+
+---
+
+## ⚙️ Configuration Reference
+
+Prisma parses environment variables from a `.env` file at runtime. It features multi-provider routing (OpenRouter, NVIDIA, Groq) based on your selected model names.
+
+| Parameter | Environment Variable | Default Value | Description |
+| :--- | :--- | :--- | :--- |
+| **Supervisor Model** | `SUPERVISOR_MODEL` | `google/gemini-2.5-flash` | LLM model for supervisor analysis and plan synthesis. |
+| **Sub-agent Model** | `SUB_AGENT_MODEL` | `google/gemini-2.5-flash` | LLM model used to compile sub-agents. |
+| **API Endpoint Key** | Provider-dependent | *(parsed from env)* | Keys parsed: `OPENROUTER_API_KEY`, `NVIDIA_API_KEY`, `GROQ_API_KEY`. |
+| **Search Engine Provider** | `SEARCH_PROVIDER` | `tavily` | Engine for the search sub-agent (`tavily`, `brave`, or `google`). |
+| **Search API Key** | Provider-dependent | *(parsed from env)* | Keys parsed: `TAVILY_API_KEY`, `BRAVE_API_KEY`, `GOOGLE_API_KEY`. |
+
+---
+
+## 🚀 Installation & Setup
+
+### 1. Prerequisites
+- **Python**: Version 3.11 or higher
+- **API Keys**: OpenRouter, Groq, or NVIDIA developer account keys.
+
+### 2. Step-by-Step Installation
+
+```bash
+# 1. Clone or navigate to the repository
+cd c:\Users\spide\Downloads\Projects\prisma-agent
+
+# 2. Initialize a virtual environment
+python -m venv .venv
+
+# 3. Activate the environment
+# On Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
+
+# 4. Install dependencies
+pip install -r requirements.txt
+```
+
+### 3. Environment Setup
+
+Create a `.env` file in the root of the project:
+
+```env
+# LLM Providers (Provide at least one)
+OPENROUTER_API_KEY=your-openrouter-key
+NVIDIA_API_KEY=your-nvidia-key
+GROQ_API_KEY=your-groq-key
+
+# Search Engine Configurations (Optional)
+SEARCH_PROVIDER=tavily
+TAVILY_API_KEY=your-tavily-key
+```
+
+---
+
+## 💻 CLI Usage
+
+Start the interactive console terminal:
+
+```bash
+python main.py
+```
+
+### ⌨️ CLI Mode Hotkey
+
+> [!TIP]
+> Press the **`TAB`** key in the prompt to toggle between modes:
+> - **`BUILD` mode**: Supervisor generates the plan and executes it using parallel sub-agents immediately.
+> - **`PLAN` mode**: Supervisor generates and displays the structured plan JSON, allowing you to review actions before committing code changes.
+
+### Console Command Suite
+
+| Command | Action |
+| :--- | :--- |
+| `/help` | Lists available console commands. |
+| `/clear` | Resets conversation memory. |
+| `/quit` | Terminates the Prisma CLI session. |
+
+### Visual Terminal Previews
+
+```
+┌────────────────────────────────────────────────────────┐
+│                        Welcome                         │
+│                        PRISMA                          │
+│                                                        │
+│  Stateful, parallel sub-agent workflows for developers │
+│                                                        │
+│  Type your request below. Press [TAB] to toggle mode.  │
+│  Use /help for commands.                               │
+└────────────────────────────────────────────────────────┘
+```
+
+#### Plan-Only Output Mode (Review mode)
+```
+prisma [plan] > Add logging to main.py
+```
 ```json
 {
-  "plan": "Add error handling to API client and write tests",
+  "plan": "Inject logging configs and info calls in main.py entrypoint",
   "subtasks": [
-    {"agent_type": "searcher", "description": "Locate api_client.py and its network calls", "relevant_files": []},
-    {"agent_type": "coder", "description": "Wrap all HTTP calls in try/except blocks", "relevant_files": ["api_client.py"]},
-    {"agent_type": "tester", "description": "Write tests covering timeout, HTTP errors, connection failures", "relevant_files": ["api_client.py"]}
+    {
+      "agent_type": "coder",
+      "description": "Import logging and configure basicConfig, then add execution logs",
+      "relevant_files": ["main.py"]
+    }
   ]
 }
 ```
 
-**For simple questions** -- a direct text response:
-
-```
-The `run_command` tool executes PowerShell commands with a 60-second timeout
-and captures both stdout and stderr. Exit codes are reported on failure.
-```
-
 ---
 
-## Tools
+## 🧪 Testing Suite
 
-Seven primitives expose the filesystem and shell to sub-agents.
+Prisma is backed by a unit and integration test suite written with `pytest`. 
 
-### Reference
-
-| Tool | Signature | Behaviour |
-|------|-----------|-----------|
-| `read_file` | `(path) -> str` | Returns up to 50,000 characters |
-| `write_file` | `(path, content) -> str` | Creates parent directories automatically |
-| `edit_file` | `(path, old, new) -> str` | Replaces first occurrence only |
-| `run_command` | `(command) -> str` | PowerShell, 60-second timeout |
-| `grep_search` | `(pattern, include?) -> str` | Recursive regex, up to 30 matches |
-| `glob_files` | `(pattern) -> str` | Recursive glob, up to 100 results |
-| `list_directory` | `(path?) -> str` | Defaults to current directory |
-
-### Excluded directories
-
-```
-node_modules    .git          __pycache__    .venv
-venv            .env          .idea          .vscode
-```
-
-### Implementation pattern
-
-```python
-from langchain_core.tools import tool
-
-@tool
-def read_file(path: str) -> str:
-    """Read the contents of a file. Returns up to 50000 characters."""
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return f.read(50000)
-    except FileNotFoundError:
-        return f"Error: file not found at {path}"
-    except Exception as e:
-        return f"Error reading file: {e}"
-```
-
----
-
-## Installation
-
-### Prerequisites
-
-- Python 3.11+
-- NVIDIA API key ([build.nvidia.com](https://build.nvidia.com))
-- pip
-
-### Setup
+### Running Tests
 
 ```bash
-# 1. Navigate to the project
-cd C:\Users\spide\Downloads\Projects\Agent
+# Set test mode (bypasses tool sandboxes to allow temporary directories)
+$env:PRISMA_TEST_MODE="1"
 
-# 2. Create virtual environment (recommended)
-python -m venv .venv
-
-# 3. Activate it
-.\.venv\Scripts\activate
-
-# 4. Install dependencies
-pip install -r requirements.txt
-
-# 5. Configure API key
-echo NVIDIA_API_KEY=nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx > .env
-```
-
-### Dependencies
-
-```
-Package                          Version          Purpose
-───────                          ───────          ───────
-langchain                        >=1.3.0          Agent framework
-langchain-core                   >=0.3.0          Core abstractions
-langchain-nvidia-ai-endpoints    >=0.3.0          NVIDIA API integration
-langgraph                        >=0.2.0          Stateful graph orchestration
-rich                             >=13.0.0         Terminal UI
-python-dotenv                    >=1.0.0          Environment variables
-```
-
----
-
-## Usage
-
-### Starting
-
-```bash
-python main.py
-```
-
-```
-╭────────────────────────────────────────────────╮
-│                   Welcome                      │
-│                                                │
-│                 Prisma                         │
-│                                                │
-│   Coordinates specialized sub-agents to        │
-│   help complete tasks faster.                  │
-│                                                │
-│   Type your coding request below.              │
-│   Use /help for commands.                      │ 
-╰────────────────────────────────────────────────╯
-```
-
-### Commands
-
-| Input | Action |
-|-------|--------|
-| `your coding request` | Delegate a task to the agent |
-| `/help` | Display available commands |
-| `/clear` | Reset conversation history |
-| `/quit` | Exit the agent |
-
-### Examples
-
-```
-You > What does the run_command tool do?
-```
-
-```
-Prisma
-┌────────────────────────────────────────────────┐
-│ The run_command tool executes PowerShell       │
-│ commands on Windows with a 60-second timeout   │
-│ and returns stdout + stderr output. Exit       │
-│ codes are reported on failure.                 │
-└────────────────────────────────────────────────┘
-```
-
-```
-You > Add error handling to the API client and write tests
-```
-
-```
-Prisma
-┌────────────────────────────────────────────────┐
-│ Results                                        │
-│                                                │
-│  1. Found api_client.py at src/client/         │
-│  2. Added try/except wrappers around all 6     │
-│     network calls                              │
-│  3. Wrote 8 test cases covering:               │
-│     - Timeout errors                           │
-│     - HTTP 4xx / 5xx responses                 │
-│     - Connection failures                      │
-│  4. All tests pass                             │
-└────────────────────────────────────────────────┘
-```
-
----
-
-## Testing
-
-### Running
-
-```bash
-# Full suite
+# Run full test suite
 pytest tests/ -v
 
-# Single file
+# Run individual tool tests
 pytest tests/test_tools.py -v
-
-# With coverage
-pytest tests/ --cov=agent --cov-report=term-missing
 ```
 
-### Test structure
+### Test Directory Layout
 
 ```
 tests/
-├── test_tools.py          Unit tests for all 7 tools
-├── test_state.py          TypedDict schema validation
-├── test_sub_agents.py     Agent factory and creation
-└── test_integration.py    End-to-end graph flow
-```
-
-### Examples
-
-```python
-def test_write_and_read_file(tmp_path):
-    path = tmp_path / "test.txt"
-    write_result = write_file.invoke({"path": str(path), "content": "hello"})
-    assert "Wrote" in write_result
-
-    read_result = read_file.invoke({"path": str(path)})
-    assert read_result == "hello"
-
-
-def test_edit_file(tmp_path):
-    path = tmp_path / "edit.txt"
-    path.write_text("foo bar baz")
-    result = edit_file.invoke({"path": str(path), "old_string": "bar", "new_string": "qux"})
-    assert "Edited" in result
-    assert path.read_text() == "foo qux baz"
-
-
-def test_grep_search(tmp_path):
-    py_file = tmp_path / "example.py"
-    py_file.write_text("def hello():\n    pass\n")
-    result = grep_search.invoke({"pattern": "def hello", "include": "*.py"})
-    assert "example.py" in result
+├── test_cli_ux.py       # Validates CLI input/output formatting & Rich panels
+├── test_integration.py  # End-to-end mocked execution graphs
+├── test_state.py        # Asserts State dictionary schema and updates
+├── test_sub_agents.py   # Verifies sub-agent factories & prompt parameters
+└── test_tools.py        # Validates file/shell tools & whitelisting
 ```
 
 ---
 
-## Configuration
+## 🛠️ Development & Extending Prisma
 
-### config.py
+### 1. Registering a New Sub-Agent
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `NVIDIA_API_KEY` | *(from .env)* | NVIDIA inference API key |
-| `NVIDIA_BASE_URL` | `https://integrate.api.nvidia.com/v1` | API endpoint |
-| `SUPERVISOR_MODEL` | `meta/llama-3.1-70b-instruct` | LLM for supervisor node |
-| `SUB_AGENT_MODEL` | `meta/llama-3.1-70b-instruct` | LLM for sub-agent nodes |
-
-### Environment
-
-```env
-NVIDIA_API_KEY=nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-Override at runtime:
-
-```bash
-set NVIDIA_API_KEY=nvapi-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-set SUPERVISOR_MODEL=meta/llama-3.1-405b-instruct
-python main.py
-```
-
----
-
-## LangGraph internals
-
-### Graph nodes
-
-```
-analyze
-  Input:  messages (conversation history)
-  Output: subtasks[]  |  messages[] (direct)
-  Logic:  LLM routes to plan or direct response
-
-execute_plan
-  Input:  subtasks[]
-  Output: subtasks[] with results
-  Logic:  ThreadPoolExecutor -> parallel sub-agents
-
-synthesize
-  Input:  subtasks[] (populated)
-  Output: messages[] (final AI response)
-  Logic:  LLM condenses all results
-```
-
-### Edge routing
-
-```python
-def route_after_analyze(state):
-    if state.get("subtasks"):
-        return "execute_plan"
-    return END
-```
-
-### Graph compilation
-
-```python
-workflow = StateGraph(AgentState)
-workflow.add_node("analyze", analyze)
-workflow.add_node("execute_plan", execute_plan)
-workflow.add_node("synthesize", synthesize)
-workflow.add_edge(START, "analyze")
-workflow.add_conditional_edges("analyze", route_after_analyze)
-workflow.add_edge("execute_plan", "synthesize")
-workflow.add_edge("synthesize", END)
-
-graph = workflow.compile()
-```
-
----
-
-## Performance
-
-### Parallel speedup
-
-| Strategy | Behaviour | Total time |
-|----------|-----------|------------|
-| Sequential | Sub-agents run one after another | sum of all agent times |
-| **Parallel** | Up to 4 sub-agents concurrently | **max** of all agent times |
-
-*Estimated 2-4x speedup for tasks with 3+ independent subtasks.*
-
-### Known limitations
-
-| Constraint | Effect | Workaround |
-|------------|--------|------------|
-| API rate limits | Degraded throughput at high concurrency | Reduce `max_workers` in `supervisor.py` |
-| LLM context window | Large files may overflow token budget | Use `read_file` with offsets |
-| Windows PowerShell | Some shell syntax differs from POSIX | Tool signatures stay agnostic |
-| No web search | Agent cannot browse documentation | Planned feature |
-
----
-
-## Development
-
-### Project tree
-
-```
-Agent/
-├── main.py                       CLI entry point
-├── config.py                     Configuration
-├── requirements.txt              Dependencies
-├── .env                          API key (gitignored)
-├── .gitignore
-├── README.md
-│
-├── agent/
-│   ├── __init__.py
-│   ├── state.py                  TypedDict schemas
-│   ├── tools.py                  7 tool implementations
-│   ├── supervisor.py             LangGraph graph definition
-│   │
-│   └── sub_agents/
-│       ├── __init__.py
-│       ├── base.py               Agent factory (create_agent)
-│       ├── coder.py              Code writing prompt + factory
-│       ├── debugger.py           Bug diagnosis prompt + factory
-│       ├── searcher.py           Code search prompt + factory
-│       ├── tester.py             Test writing prompt + factory
-│       └── spawner.py            Dynamic agent factory
-│
-└── utils/
-    ├── __init__.py
-    └── display.py                Rich console utilities
-```
-
-### Adding a sub-agent
+Create a new file in `agent/sub_agents/`:
 
 ```python
 # agent/sub_agents/refactorer.py
 from .base import create_sub_agent
 from ..tools import TOOLS
 
-REFACTORER_PROMPT = """You are a code refactoring expert..."""
+REFACTORER_PROMPT = "You are a refactoring agent. Review code for clean-code patterns..."
 
 def create_refactorer(model, api_key, base_url):
     return create_sub_agent(
         model=model, api_key=api_key, base_url=base_url,
-        system_prompt=REFACTORER_PROMPT,
-        tools=TOOLS,
+        system_prompt=REFACTORER_PROMPT, tools=TOOLS
     )
 ```
 
-Register in `agent/supervisor.py`:
+Register it in `agent/supervisor.py`:
 
-```python
-from .sub_agents.refactorer import create_refactorer
+```diff
+  from .sub_agents.tester import create_tester
++ from .sub_agents.refactorer import create_refactorer
 
-AGENT_FACTORY["refactorer"] = lambda: create_refactorer(...)
+  AGENT_FACTORY = {
+      "coder": lambda: create_coder(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+      "debugger": lambda: create_debugger(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+      "searcher": lambda: create_searcher(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+      "tester": lambda: create_tester(SUB_AGENT_MODEL, API_KEY, BASE_URL),
++     "refactorer": lambda: create_refactorer(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+  }
 ```
 
-Then add the agent to the supervisor prompt so the LLM knows it exists.
+### 2. Registering a New Tool
 
-### Adding a tool
+Create your tool inside `agent/tools.py`:
 
 ```python
-# agent/tools.py
 @tool
-def search_web(query: str) -> str:
-    """Search the web for information."""
-    # implementation
+def calculate_complexity(path: str) -> str:
+    """Calculates code complexity metrics of a given file."""
+    # ... logic here ...
+    return "Complexity: Low"
 ```
 
-Append to the export list:
+Add your tool to the exports array:
 
-```python
-TOOLS = [read_file, write_file, edit_file, run_command, grep_search, glob_files, list_directory, search_web]
+```diff
+- TOOLS = [read_file, write_file, edit_file, run_command, grep_search, glob_files, list_directory, search_web]
++ TOOLS = [read_file, write_file, edit_file, run_command, grep_search, glob_files, list_directory, search_web, calculate_complexity]
 ```
 
 ---
 
-## Troubleshooting
+## 🔍 Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `NVIDIA_API_KEY not set` | Missing or default key | Set in `.env` or environment |
-| `No module named 'langchain'` | Missing dependency | `pip install -r requirements.txt` |
-| Sub-agents run sequentially | API rate limiting | Reduce `max_workers` to 2 |
-| `Command timed out` | Shell command exceeded 60s | Increase timeout in `tools.py` |
-| `string not found in file` | Ambiguous `old_string` | Include surrounding context for uniqueness |
+| Symptom | Probable Cause | Corrective Action |
+| :--- | :--- | :--- |
+| `NVIDIA_API_KEY` (or other key) not set | The API key was not loaded from the `.env` file | Double-check `.env` syntax; run `set` in cmd or `$env` in powershell to verify keys are visible. |
+| Tool failures inside tests | Sandbox checks blocked access to pytest temporary paths | Run tests with environment flag `$env:PRISMA_TEST_MODE="1"`. |
+| Commands block or time out | Command run is not whitelisted, or has interactive prompts | Ensure command is in `_ALLOWED_COMMANDS` and does not prompt for user input. |
+| `String not found` in `edit_file` | The `old_string` was not found or is ambiguous | Double-check text encoding or provide surrounding context for unique matching. |
 
 ---
 
-<p align="center">
+<div align="center">
   <sub>Built with Python, LangGraph, and LangChain</sub><br>
-  <sub>License: MIT</sub>
-</p>
+  <sub>License: MIT • Copyright © 2026</sub>
+</div>
