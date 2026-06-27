@@ -144,15 +144,6 @@ class PrismaLayout:
             self._console.print(render_notification(msg, level))
         self._notifications.clear()
 
-        # Footer keybindings
-        footer = render_footer(
-            mode=mode,
-            est_tokens=tokens,
-            model_name=self._model_name,
-            latency=self._last_latency,
-        )
-        self._console.print(footer)
-
     def update_session(
         self,
         turns: int | None = None,

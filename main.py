@@ -90,8 +90,6 @@ def main():
                 )
                 continue
             user_input = pending_request
-            console.print()
-            console.print(render_user_message(user_input))
             mode = "build"
             set_pending_request(None)
 
@@ -137,10 +135,6 @@ def main():
                 if new_state is not None:
                     state = new_state
                 continue
-
-        else:
-            console.print()
-            console.print(render_user_message(user_input))
 
         try:
             t0 = time.time()
