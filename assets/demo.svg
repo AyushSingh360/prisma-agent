@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 380" width="100%" height="auto">
+  <style>
+    /* Global Styles */
+    .terminal-bg {
+      fill: #0B1220;
+      stroke: #1E3A5F;
+      stroke-width: 1.5;
+      rx: 8;
+    }
+    .window-header {
+      fill: #111827;
+      rx: 8;
+    }
+    .text-base {
+      font-family: 'Fira Code', 'Courier New', Courier, monospace;
+      font-size: 13px;
+      fill: #E5E7EB;
+    }
+    
+    /* Palette */
+    .accent { fill: #6EC6FF; font-weight: bold; }
+    .dim { fill: #6B7280; }
+    .success { fill: #10B981; }
+    .warning { fill: #F59E0B; }
+    .error { fill: #EF4444; }
+    
+    /* CSS Animations on an 8-second loop */
+    @keyframes loopFade {
+      0%, 90% { opacity: 0; }
+      5%, 85% { opacity: 1; }
+    }
+    
+    @keyframes typingPrompt {
+      0% { width: 0; }
+      15%, 85% { width: 285px; } /* Length of the command */
+      90%, 100% { width: 0; }
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    @keyframes stepPlan {
+      0%, 17% { opacity: 0; }
+      20%, 85% { opacity: 1; }
+      90%, 100% { opacity: 0; }
+    }
+    
+    @keyframes stepCoderActive {
+      0%, 21% { opacity: 0; }
+      23%, 45% { opacity: 1; }
+      46%, 100% { opacity: 0; }
+    }
+    
+    @keyframes stepCoderDone {
+      0%, 45% { opacity: 0; }
+      46%, 85% { opacity: 1; }
+      90%, 100% { opacity: 0; }
+    }
+    
+    @keyframes stepTesterActive {
+      0%, 25% { opacity: 0; }
+      27%, 59% { opacity: 1; }
+      60%, 100% { opacity: 0; }
+    }
+    
+    @keyframes stepTesterDone {
+      0%, 59% { opacity: 0; }
+      60%, 85% { opacity: 1; }
+      90%, 100% { opacity: 0; }
+    }
+    
+    @keyframes responseFade {
+      0%, 65% { opacity: 0; }
+      68%, 85% { opacity: 1; }
+      90%, 100% { opacity: 0; }
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Animation classes */
+    .prompt-type {
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+      animation: typingPrompt 8s steps(30, end) infinite;
+    }
+    
+    .cursor {
+      animation: blink 1s step-end infinite;
+    }
+    
+    .plan-group {
+      animation: stepPlan 8s infinite;
+    }
+    
+    .coder-active {
+      animation: stepCoderActive 8s infinite;
+    }
+    .coder-spinner {
+      transform-origin: 32px 135px;
+      animation: rotate 1s linear infinite;
+    }
+    
+    .coder-done {
+      animation: stepCoderDone 8s infinite;
+    }
+    
+    .tester-active {
+      animation: stepTesterActive 8s infinite;
+    }
+    .tester-spinner {
+      transform-origin: 32px 165px;
+      animation: rotate 1s linear infinite;
+    }
+    
+    .tester-done {
+      animation: stepTesterDone 8s infinite;
+    }
+    
+    .final-response {
+      animation: responseFade 8s infinite;
+    }
+  </style>
+
+  <!-- Terminal Frame -->
+  <rect class="terminal-bg" x="0" y="0" width="700" height="380" />
+  
+  <!-- Window Header Bar -->
+  <path class="window-header" d="M0 8 C0 3.5 3.5 0 8 0 H692 C696.5 0 700 3.5 700 8 V35 H0 Z" />
+  
+  <!-- Window Dots -->
+  <circle cx="20" cy="18" r="6" fill="#EF4444" />
+  <circle cx="40" cy="18" r="6" fill="#F59E0B" />
+  <circle cx="60" cy="18" r="6" fill="#10B981" />
+  
+  <!-- Header Text -->
+  <text x="350" y="22" font-family="'Fira Code', monospace" font-size="11" fill="#6B7280" text-anchor="middle">prisma-agent Console</text>
+  
+  <!-- Terminal Content Area -->
+  <g transform="translate(25, 60)">
+    
+    <!-- User Input Line -->
+    <g transform="translate(0, 20)">
+      <text class="text-base font-bold accent" x="0" y="0">prisma</text>
+      <text class="text-base dim" x="55" y="0">[build]</text>
+      <text class="text-base accent" x="110" y="0">❯</text>
+      
+      <!-- Typing container -->
+      <svg x="125" y="-13" width="500" height="20">
+        <text class="text-base prompt-type" x="0" y="13">Add logging to main.py</text>
+        <!-- The cursor moves using absolute positioning at end of text -->
+      </svg>
+      <!-- Blinking Cursor -->
+      <text class="text-base cursor accent" x="415" y="0">▋</text>
+    </g>
+    
+    <!-- Plan Spawning -->
+    <g class="plan-group" transform="translate(0, 55)">
+      <text class="text-base accent" x="0" y="0">◇ Planning subtasks...</text>
+      
+      <text class="text-base dim" x="20" y="25">coder</text>
+      <text class="text-base" x="100" y="25">Import logging and inject debug prints</text>
+      
+      <text class="text-base dim" x="20" y="45">tester</text>
+      <text class="text-base" x="100" y="45">Verify script compilation and syntax</text>
+    </g>
+    
+    <!-- Coder Agent Execution -->
+    <!-- Coder Active Spinner -->
+    <g class="coder-active" transform="translate(0, 130)">
+      <g class="coder-spinner">
+        <text class="text-base accent" x="7" y="9" text-anchor="middle">⠋</text>
+      </g>
+      <text class="text-base accent" x="25" y="5">coder</text>
+      <text class="text-base dim" x="90" y="5">Injecting logger setup...</text>
+    </g>
+    <!-- Coder Done Checkmark -->
+    <g class="coder-done" transform="translate(0, 130)">
+      <text class="text-base success" x="7" y="5">✓</text>
+      <text class="text-base success" x="25" y="5">coder</text>
+      <text class="text-base dim" x="90" y="5">Completed main.py refactoring (1.4s)</text>
+    </g>
+    
+    <!-- Tester Agent Execution -->
+    <!-- Tester Active Spinner -->
+    <g class="tester-active" transform="translate(0, 160)">
+      <g class="tester-spinner">
+        <text class="text-base accent" x="7" y="9" text-anchor="middle">⠋</text>
+      </g>
+      <text class="text-base accent" x="25" y="5">tester</text>
+      <text class="text-base dim" x="90" y="5">Executing syntax validation tests...</text>
+    </g>
+    <!-- Tester Done Checkmark -->
+    <g class="tester-done" transform="translate(0, 160)">
+      <text class="text-base success" x="7" y="5">✓</text>
+      <text class="text-base success" x="25" y="5">tester</text>
+      <text class="text-base dim" x="90" y="5">Completed validation tests successfully (0.9s)</text>
+    </g>
+    
+    <!-- Final Synthesized Output -->
+    <g class="final-response" transform="translate(0, 210)">
+      <path d="M0 0 H630" stroke="#1E3A5F" stroke-width="1" />
+      <text class="text-base accent" x="0" y="25">◆ Prisma</text>
+      <text class="text-base dim" x="80" y="25">3.2s</text>
+      
+      <text class="text-base" x="20" y="55">I have successfully refactored main.py by:</text>
+      <text class="text-base success" x="30" y="75">1. Importing the built-in logging module.</text>
+      <text class="text-base success" x="30" y="95">2. Setting basicConfig to INFO inside main entrypoint.</text>
+      <text class="text-base success" x="30" y="115">3. Verifying that the module starts and logs cleanly.</text>
+    </g>
+
+  </g>
+</svg>

@@ -24,6 +24,10 @@
 
 *Prisma is a multi-agent coding assistant built on top of LangGraph. It intelligently decomposes user-defined natural language requests into parallel subtasks and delegates them to specialized, concurrent sub-agents to accelerate development velocity.*
 
+<p align="center">
+  <img src="assets/demo.svg" alt="Prisma Console Demo" width="620" />
+</p>
+
 ---
 
 </div>
