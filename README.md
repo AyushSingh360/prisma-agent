@@ -1,6 +1,13 @@
 <div align="center">
 
-# 🌌 PRISMA
+<pre>
+    ____  ____  _________ __  ___ ___ 
+   / __ \/ __ \/  _/ ___//  |/  //   |
+  / /_/ / /_/ // / \__ \/ /|_/ // /| |
+ / ____/ _, _// / ___/ / /  / // ___ |
+/_/   /_/ |_/___//____/_/  /_//_/  |_|
+</pre>
+
 ### *A Stateful Parallel Multi-Agent Orchestration Framework*
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
