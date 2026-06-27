@@ -12,7 +12,7 @@ Prisma is a terminal-based AI coding assistant that coordinates specialized sub-
 ## Quick Start
 
 ```bash
-git clone https://github.com/<your-username>/prisma-agent
+git clone https://github.com/AyushSingh360/prisma-agent
 cd prisma-agent
 pip install -r requirements.txt
 cp .env .env.backup
