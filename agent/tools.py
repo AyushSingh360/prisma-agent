@@ -1,7 +1,10 @@
 import json
 import os
 import shlex
+import subprocess
+import re as re_module
 from pathlib import Path
+from langchain_core.tools import tool
 
 # Helper: ensure file operations stay inside the project root
 def _is_path_within_repo(path_str: str) -> bool:
@@ -20,11 +23,6 @@ def _is_path_within_repo(path_str: str) -> bool:
 
 # Whitelisted commands for run_command (PowerShell). Only allow safe utilities.
 _ALLOWED_COMMANDS = {"pytest", "python", "pip", "git", "dir", "ls", "echo", "Get-ChildItem", "Set-Content", "Remove-Item"}
-
-import subprocess
-import re as re_module
-from pathlib import Path
-from langchain_core.tools import tool
 
 try:
     import requests

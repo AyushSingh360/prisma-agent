@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-from config import API_KEY, BASE_URL, SUPERVISOR_MODEL, SUB_AGENT_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS, THINKING
+import config
 from .state import AgentState, SubTask
 from .sub_agents.coder import create_coder
 from .sub_agents.debugger import create_debugger
@@ -55,10 +55,10 @@ Current workspace: the project directory
 
 
 AGENT_FACTORY = {
-    "coder": lambda: create_coder(SUB_AGENT_MODEL, API_KEY, BASE_URL),
-    "debugger": lambda: create_debugger(SUB_AGENT_MODEL, API_KEY, BASE_URL),
-    "searcher": lambda: create_searcher(SUB_AGENT_MODEL, API_KEY, BASE_URL),
-    "tester": lambda: create_tester(SUB_AGENT_MODEL, API_KEY, BASE_URL),
+    "coder": lambda: create_coder(config.SUB_AGENT_MODEL, config.API_KEY, config.BASE_URL),
+    "debugger": lambda: create_debugger(config.SUB_AGENT_MODEL, config.API_KEY, config.BASE_URL),
+    "searcher": lambda: create_searcher(config.SUB_AGENT_MODEL, config.API_KEY, config.BASE_URL),
+    "tester": lambda: create_tester(config.SUB_AGENT_MODEL, config.API_KEY, config.BASE_URL),
 }
 
 
@@ -66,7 +66,7 @@ def _extract_json(text: str) -> str:
     text = text.strip()
     if text.startswith("```"):
         lines = text.splitlines()
-        start = 1 if len(lines[0]) <= 3 or not lines[0].startswith("```") else 1
+        start = 1
         end = len(lines)
         for i in range(len(lines) - 1, -1, -1):
             if lines[i].strip() == "```":
@@ -78,14 +78,14 @@ def _extract_json(text: str) -> str:
 
 def build_supervisor_graph():
     llm_kwargs = dict(
-        model=SUPERVISOR_MODEL,
-        api_key=API_KEY,
-        base_url=BASE_URL,
-        temperature=TEMPERATURE,
-        top_p=TOP_P,
-        max_tokens=MAX_TOKENS,
+        model=config.SUPERVISOR_MODEL,
+        api_key=config.API_KEY,
+        base_url=config.BASE_URL,
+        temperature=config.TEMPERATURE,
+        top_p=config.TOP_P,
+        max_tokens=config.MAX_TOKENS,
     )
-    if THINKING:
+    if config.THINKING:
         llm_kwargs["extra_body"] = {"chat_template_kwargs": {"thinking": True}}
     llm = ChatOpenAI(**llm_kwargs)
 
@@ -138,7 +138,7 @@ def build_supervisor_graph():
                 else:
                     task_for_spawn = f"Agent type '{agent_type}' requested.\n\nTask: {description}"
                     executor = create_spawned_agent(
-                        SUB_AGENT_MODEL, API_KEY, BASE_URL, task_for_spawn
+                        config.SUB_AGENT_MODEL, config.API_KEY, config.BASE_URL, task_for_spawn
                     )
 
                 result = executor.invoke({
