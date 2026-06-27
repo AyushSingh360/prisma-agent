@@ -3,7 +3,10 @@
     "allow": [
       "Bash(python -m pytest tests/ -v)",
       "Bash(git add *)",
-      "Bash(git commit -m 'fix: resolve 5 critical bugs in rendering, configuration, and imports *)"
+      "Bash(git commit -m 'fix: resolve 5 critical bugs in rendering, configuration, and imports *)",
+      "Bash(python -m py_compile main.py utils/layout.py)",
+      "Bash(git commit -m 'fix: remove repeated footer and duplicate user message rendering *)",
+      "Bash(python -c \"from main import main; print\\('Main module imports successfully'\\)\")"
     ]
   }
 }
